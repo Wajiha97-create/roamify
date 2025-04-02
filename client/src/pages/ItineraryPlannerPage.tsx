@@ -589,7 +589,40 @@ export default function ItineraryPlannerPage() {
                   </div>
                   
                   <div className="pt-4 border-t">
-                    <Button className="w-full" size="lg">
+                    <Button 
+                      className="w-full" 
+                      size="lg"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/trips', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                              destinationId: parseInt(selectedDestinationId),
+                              startDate: dateRange.from?.toISOString(),
+                              endDate: dateRange.to?.toISOString(),
+                              duration: calculateTripDuration(),
+                              budget: budget,
+                              preferences: selectedPreferences,
+                              travelers: travelers,
+                              tripType: "City"
+                            }),
+                          });
+
+                          if (!response.ok) {
+                            throw new Error('Failed to generate itinerary');
+                          }
+
+                          const trip = await response.json();
+                          window.location.href = `/trip/${trip.id}`;
+                        } catch (error) {
+                          console.error('Error generating itinerary:', error);
+                          alert('Failed to generate itinerary. Please try again.');
+                        }
+                      }}
+                    >
                       Generate My Personalized Itinerary
                     </Button>
                     <p className="text-sm text-center text-muted-foreground mt-2">
