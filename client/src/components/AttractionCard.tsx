@@ -5,15 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { convertCurrency, formatCurrencyByCode } from "@/lib/currency";
-import { useRouter } from 'next/router'; // Import useRouter
+//import { useRouter } from 'next/router'; // Removed useRouter import
 
 interface AttractionCardProps {
   attraction: Attraction;
+  setLocation: (location: string) => void; // Added setLocation function
 }
 
-const AttractionCard = ({ attraction }: AttractionCardProps) => {
+const AttractionCard = ({ attraction, setLocation }: AttractionCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
-  const router = useRouter(); // Initialize useRouter
+  //const router = useRouter(); // Removed useRouter initialization
 
   const {
     name,
@@ -107,7 +108,7 @@ const AttractionCard = ({ attraction }: AttractionCardProps) => {
             <Button className="px-4 py-2 bg-primary hover:bg-blue-700 text-white font-medium rounded-lg text-sm transition mr-2">
               Book Now
             </Button>
-            <Button variant="outline" onClick={() => router.push(`/attractions/${attraction.id}`)}> {/* Added View Details button with navigation */}
+            <Button variant="outline" onClick={() => setLocation(`/attractions/${attraction.id}`)}> {/* Updated View Details button with setLocation */}
               View Details
             </Button>
           </div>
