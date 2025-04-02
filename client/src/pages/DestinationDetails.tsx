@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRoute } from "wouter";
+import { useRoute, useLocation } from "wouter";
 import { Destination, Hotel, Attraction, Trip, BudgetAllocation } from "@shared/schema";
 import BudgetBreakdown from "@/components/BudgetBreakdown";
 import HotelCard from "@/components/HotelCard";
@@ -19,6 +19,7 @@ const DestinationDetails = () => {
   const id = params?.id ? parseInt(params.id) : 0;
   const { toast } = useToast();
   const [tripId, setTripId] = useState<number | null>(null);
+  const [, setLocation] = useLocation();
 
   // Fetch destination data
   const { data: destination, isLoading: destinationLoading } = useQuery<Destination>({
@@ -87,7 +88,7 @@ const DestinationDetails = () => {
           <CardContent className="p-10 text-center">
             <h2 className="text-2xl font-bold mb-4">Destination Not Found</h2>
             <p className="text-neutral-600 mb-6">The destination you're looking for doesn't exist or has been removed.</p>
-            <Button onClick={() => window.location.href = "/"}>Return to Home</Button>
+            <Button onClick={() => setLocation("/")}>Return to Home</Button>
           </CardContent>
         </Card>
       </div>
@@ -170,7 +171,9 @@ const DestinationDetails = () => {
                   ))}
                 </ul>
                 <div className="mt-6">
-                  <Button className="w-full">Plan Your Trip</Button>
+                  <Button className="w-full" onClick={() => setLocation("/plan")}>
+                    Create Personalized Itinerary
+                  </Button>
                 </div>
               </div>
             </div>
