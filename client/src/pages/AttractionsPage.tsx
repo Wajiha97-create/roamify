@@ -275,10 +275,12 @@ const AttractionsPage = () => {
               </div>
             </CardContent>
             <CardFooter className="pt-0">
+              <Link to={`/attractions/${attraction.id}`}>
               <Button variant="outline" className="w-full">
-                <Camera size={16} className="mr-2" />
-                View Details
+                  <Camera size={16} className="mr-2" />
+                  View Details
               </Button>
+            </Link>
             </CardFooter>
           </Card>
         ))}
