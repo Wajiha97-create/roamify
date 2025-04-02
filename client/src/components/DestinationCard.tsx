@@ -89,10 +89,7 @@ const DestinationCard = ({ destination }: DestinationCardProps) => {
           alt={`${name}, ${country}`} 
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-4 left-4 bg-white bg-opacity-90 rounded-full px-3 py-1 flex items-center">
-          <span className="mr-1">{getBudgetMatchIcon(budgetMatch)}</span>
-          <span className="text-sm font-medium">{getBudgetMatchText(budgetMatch)}</span>
-        </div>
+        
       </div>
       <div className="p-5">
         <div className="flex justify-between items-start">
