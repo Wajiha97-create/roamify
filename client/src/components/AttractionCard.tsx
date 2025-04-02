@@ -108,9 +108,12 @@ const AttractionCard = ({ attraction, setLocation }: AttractionCardProps) => {
             <Button className="px-4 py-2 bg-primary hover:bg-blue-700 text-white font-medium rounded-lg text-sm transition mr-2">
               Book Now
             </Button>
-            <Button variant="outline" onClick={() => setLocation(`/attractions/${attraction.id}`)}> {/* Updated View Details button with setLocation */}
-              View Details
-            </Button>
+            <Link to={`/attractions/${attraction.id}`} className="w-full">
+              <Button variant="outline" className="w-full">
+                <Camera size={16} className="mr-2" />
+                View Details
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

@@ -38,7 +38,7 @@ const AttractionsPage = () => {
 
   // Extract countries and cities from destinations for filters
   const countries = destinations ? Array.from(new Set(destinations.map((dest: Destination) => dest.country))) : [];
-  
+
   const cities = destinations 
     ? countryFilter 
       ? destinations.filter((dest: Destination) => dest.country === countryFilter).map((dest: Destination) => dest.name)
@@ -59,13 +59,13 @@ const AttractionsPage = () => {
       const matchesSearch = searchQuery === "" || 
         attraction.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (attraction.description && attraction.description.toLowerCase().includes(searchQuery.toLowerCase()));
-      
+
       const matchesCountry = countryFilter === "" || attraction.country === countryFilter;
-      
+
       const matchesCity = cityFilter === "" || attraction.destinationName === cityFilter;
-      
+
       const matchesType = typeFilter === "" || attraction.type === typeFilter;
-      
+
       return matchesSearch && matchesCountry && matchesCity && matchesType;
     })
     : [];
@@ -97,7 +97,7 @@ const AttractionsPage = () => {
           Explore and filter attractions around the world
         </p>
       </div>
-      
+
       {/* Search and filter section */}
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row gap-4 items-center">
@@ -141,7 +141,7 @@ const AttractionsPage = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="city-filter">City</Label>
                     <Select value={cityFilter} onValueChange={setCityFilter}>
@@ -195,7 +195,7 @@ const AttractionsPage = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex justify-end mt-6">
                 <Button 
                   variant="outline" 
@@ -204,7 +204,10 @@ const AttractionsPage = () => {
                 >
                   Clear Filters
                 </Button>
-                <Button onClick={() => setShowFilters(false)}>
+                <Button onClick={() => {
+                setShowFilters(false);
+                // Filters are already applied through the state changes
+              }}>
                   Apply Filters
                 </Button>
               </div>
@@ -212,7 +215,7 @@ const AttractionsPage = () => {
           </Card>
         )}
       </div>
-      
+
       {/* Results count */}
       <div className="mb-6 flex items-center justify-between">
         <p className="text-gray-600">
@@ -230,7 +233,7 @@ const AttractionsPage = () => {
           </SelectContent>
         </Select>
       </div>
-      
+
       {/* Attraction listing */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredAttractions.map((attraction: Attraction & { destinationName?: string; country?: string; duration?: string }) => (
