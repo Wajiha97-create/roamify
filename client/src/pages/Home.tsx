@@ -8,10 +8,24 @@ import DestinationCard from "@/components/DestinationCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Globe, MapPin, Star } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import { ChevronLeft, ChevronRight, Globe, MapPin, Star, CalendarIcon, Plus, Minus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
 
 const Home = () => {
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({
+    from: undefined,
+    to: undefined,
+  });
+  const [travelers, setTravelers] = useState(2);
+  const [budget, setBudget] = useState(2000);
+  
   // Query to get all destinations
   const { data: destinations, isLoading } = useQuery<Destination[]>({
     queryKey: ["/api/destinations"],
@@ -32,20 +46,88 @@ const Home = () => {
 
   return (
     <>
-      {/* Hero Section */}
+      {/* Hero Section with Trip Planning Form */}
       <section className="relative bg-gradient-to-r from-primary to-blue-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
           <div className="lg:flex lg:items-center lg:justify-between">
             <div className="lg:w-1/2 lg:pr-12">
               <h1 className="text-4xl sm:text-5xl font-bold font-heading leading-tight mb-6">
-                Plan your perfect trip within your budget
+                Find Your Perfect Destination
               </h1>
               <p className="text-xl text-blue-100 mb-8">
-                Discover amazing destinations, find the best hotels, and create memorable experiences without breaking the bank.
+                Tell us your budget and dates, and we'll help you discover the ideal destinations for your trip.
               </p>
-              
-              {/* Budget Input Component */}
-              <BudgetInput />
+
+              {/* Trip Planning Form */}
+              <div className="space-y-6 bg-white/10 p-6 rounded-xl backdrop-blur-sm">
+                <BudgetInput />
+                
+                <div>
+                  <Label className="text-white mb-2 block">When do you want to travel?</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start bg-white/20 border-white/30 text-white hover:bg-white/30">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateRange.from ? (
+                          dateRange.to ? (
+                            <>
+                              {format(dateRange.from, "MMM d, yyyy")} - {format(dateRange.to, "MMM d, yyyy")}
+                            </>
+                          ) : (
+                            format(dateRange.from, "MMM d, yyyy")
+                          )
+                        ) : (
+                          <span>Pick your dates</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="range"
+                        selected={dateRange}
+                        onSelect={setDateRange}
+                        initialFocus
+                        numberOfMonths={2}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">Number of Travelers</Label>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                      onClick={() => setTravelers(Math.max(1, travelers - 1))}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-xl font-medium min-w-[3ch] text-center">{travelers}</span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                      onClick={() => setTravelers(travelers + 1)}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                <Button 
+                  className="w-full bg-white text-primary hover:bg-white/90"
+                  onClick={() => {
+                    if (budget && dateRange.from && dateRange.to) {
+                      // Trigger destination search with these parameters
+                      handleSearch();
+                    }
+                  }}
+                >
+                  Find Destinations
+                </Button>
+              </div>
             </div>
             <div className="hidden lg:block lg:w-1/2">
               <img 
