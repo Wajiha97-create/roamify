@@ -62,7 +62,7 @@ const AttractionsPage = () => {
 
       const matchesCountry = countryFilter === "" || attraction.country === countryFilter;
 
-      const matchesCity = cityFilter === "" || attraction.destinationName === cityFilter;
+      const matchesCity = cityFilter === "all_cities" || attraction.destinationName === cityFilter;
 
       const matchesType = typeFilter === "" || attraction.type === typeFilter;
 
@@ -72,7 +72,7 @@ const AttractionsPage = () => {
 
   const clearFilters = () => {
     setCountryFilter("");
-    setCityFilter("");
+    setCityFilter("all_cities");
     setTypeFilter("");
     setSearchQuery("");
   };
@@ -149,7 +149,7 @@ const AttractionsPage = () => {
                         <SelectValue placeholder="All cities" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All cities</SelectItem>
+                        <SelectItem value="all_cities">All cities</SelectItem>
                         {cities.map((city) => (
                           <SelectItem key={city} value={city}>
                             {city}
