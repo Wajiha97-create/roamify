@@ -594,7 +594,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
   const isLoading = isLoadingTripDetails || isLoadingTripData;
   
   // Get the number of days in the trip
-  const tripDuration = tripData?.duration || 5;
+  const tripDuration = tripData && 'duration' in tripData ? tripData.duration : 5;
   
   // Get an array of day numbers (1 to number of days)
   const dayNumbers = Array.from({ length: tripDuration }, (_, i) => i + 1);

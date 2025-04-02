@@ -544,7 +544,7 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
               </Button>
               <Button 
                 onClick={generateItinerary} 
-                disabled={isGenerating || !filteredAttractions || filteredAttractions.length === 0}
+                disabled={isGenerating}
                 className="flex items-center"
               >
                 {isGenerating ? (
