@@ -32,10 +32,10 @@ export function calculateTripDuration(startDate: Date | string, endDate: Date | 
   return diffDays;
 }
 
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number, currencyCode: string = 'USD'): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: currencyCode,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   }).format(amount);

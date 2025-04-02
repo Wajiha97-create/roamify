@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CurrencySelector } from "@/components/CurrencySelector";
 
 const Navbar = () => {
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
@@ -15,27 +16,30 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/">
-              <a className="text-2xl font-bold text-primary font-heading">Wanderlust</a>
+            <Link href="/" className="text-2xl font-bold text-primary font-heading">
+              Wanderlust
             </Link>
           </div>
           
           <nav className="hidden md:flex space-x-10 items-center">
-            <Link href="/">
-              <a className="text-neutral-600 hover:text-primary font-medium">Find Destinations</a>
+            <Link href="/" className="text-neutral-600 hover:text-primary font-medium">
+              Find Destinations
             </Link>
-            <Link href="/hotels">
-              <a className="text-neutral-600 hover:text-primary font-medium">Hotels</a>
+            <Link href="/hotels" className="text-neutral-600 hover:text-primary font-medium">
+              Hotels
             </Link>
-            <Link href="/attractions">
-              <a className="text-neutral-600 hover:text-primary font-medium">Attractions</a>
+            <Link href="/attractions" className="text-neutral-600 hover:text-primary font-medium">
+              Attractions
             </Link>
-            <Link href="/trips">
-              <a className="text-neutral-600 hover:text-primary font-medium">My Trips</a>
+            <Link href="/trips" className="text-neutral-600 hover:text-primary font-medium">
+              My Trips
             </Link>
           </nav>
           
           <div className="flex items-center space-x-4">
+            <div className="hidden md:block">
+              <CurrencySelector />
+            </div>
             <Button
               variant="outline"
               className="hidden md:block border-primary text-primary hover:bg-primary hover:text-white"
@@ -60,21 +64,24 @@ const Navbar = () => {
       {/* Mobile menu */}
       <div className={`md:hidden bg-white border-t ${mobileMenuVisible ? 'block' : 'hidden'}`}>
         <div className="px-2 pt-2 pb-3 space-y-1">
-          <Link href="/">
-            <a className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">Find Destinations</a>
+          <Link href="/" className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">
+            Find Destinations
           </Link>
-          <Link href="/hotels">
-            <a className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">Hotels</a>
+          <Link href="/hotels" className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">
+            Hotels
           </Link>
-          <Link href="/attractions">
-            <a className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">Attractions</a>
+          <Link href="/attractions" className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">
+            Attractions
           </Link>
-          <Link href="/trips">
-            <a className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">My Trips</a>
+          <Link href="/trips" className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">
+            My Trips
           </Link>
-          <Link href="/signin">
-            <a className="block px-3 py-2 rounded-md text-base font-medium text-primary">Sign In</a>
+          <Link href="/signin" className="block px-3 py-2 rounded-md text-base font-medium text-primary">
+            Sign In
           </Link>
+          <div className="px-3 py-2">
+            <CurrencySelector />
+          </div>
         </div>
       </div>
     </header>

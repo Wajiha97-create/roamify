@@ -2,6 +2,8 @@ import { type Hotel } from "@shared/schema";
 import { Star, StarHalf, MapPin, Wifi, DollarSign, Check, Tag, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { convertCurrency, formatCurrencyByCode } from "@/lib/currency";
 
 interface HotelCardProps {
   hotel: Hotel;
@@ -92,6 +94,12 @@ const HotelCard = ({ hotel }: HotelCardProps) => {
   };
   
   const discountStyle = discountInfo ? getDiscountInfoStyle(discountInfo) : null;
+  
+  const { selectedCurrency } = useCurrency();
+  
+  // Convert price to selected currency
+  const convertedPrice = convertCurrency(pricePerNight, selectedCurrency.code);
+  const formattedPrice = formatCurrencyByCode(convertedPrice, selectedCurrency.code);
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col md:flex-row">
@@ -126,7 +134,7 @@ const HotelCard = ({ hotel }: HotelCardProps) => {
             <Badge className={`text-xs px-2 py-1 rounded-full inline-block mb-1 ${getBudgetBadgeStyle(withinBudget)}`}>
               {withinBudget ? "Within Budget" : label || "Premium"}
             </Badge>
-            <p className="text-lg font-semibold text-primary">${pricePerNight}</p>
+            <p className="text-lg font-semibold text-primary">{formattedPrice}</p>
             <p className="text-xs text-neutral-500">per night</p>
           </div>
         </div>

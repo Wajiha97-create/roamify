@@ -3,6 +3,8 @@ import { type Destination } from "@shared/schema";
 import { Star, StarHalf, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { convertCurrency, formatCurrencyByCode } from "@/lib/currency";
 
 interface DestinationCardProps {
   destination: Destination;
@@ -73,6 +75,12 @@ const DestinationCard = ({ destination }: DestinationCardProps) => {
     Romantic: "bg-purple-50 text-purple-700"
   };
 
+  const { selectedCurrency } = useCurrency();
+  
+  // Convert price to selected currency
+  const convertedPrice = convertCurrency(pricePerPerson, selectedCurrency.code);
+  const formattedPrice = formatCurrencyByCode(convertedPrice, selectedCurrency.code);
+  
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative h-52">
@@ -93,7 +101,7 @@ const DestinationCard = ({ destination }: DestinationCardProps) => {
             <p className="text-neutral-500">{durationDays} days trip</p>
           </div>
           <div className="text-right">
-            <p className="text-lg font-semibold text-primary">${pricePerPerson.toLocaleString()}</p>
+            <p className="text-lg font-semibold text-primary">{formattedPrice}</p>
             <p className="text-sm text-neutral-500">per person</p>
           </div>
         </div>

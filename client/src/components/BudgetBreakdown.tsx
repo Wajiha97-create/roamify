@@ -3,6 +3,8 @@ import { BudgetAllocation } from "@shared/schema";
 import { Lightbulb, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { convertCurrency, formatCurrencyByCode } from "@/lib/currency";
 
 interface BudgetBreakdownProps {
   tripId: number;
@@ -50,6 +52,19 @@ const BudgetBreakdown = ({
   
   const remaining = totalBudget - totalAllocated;
   const allocatedPercentage = (totalAllocated / totalBudget) * 100;
+  
+  // Get currency information
+  const { selectedCurrency } = useCurrency();
+  
+  // Convert budget amounts to selected currency
+  const convertedTotalBudget = convertCurrency(totalBudget, selectedCurrency.code);
+  const convertedTotalAllocated = convertCurrency(totalAllocated, selectedCurrency.code);
+  const convertedRemaining = convertCurrency(remaining, selectedCurrency.code);
+  
+  // Format currency values
+  const formattedTotalBudget = formatCurrencyByCode(convertedTotalBudget, selectedCurrency.code);
+  const formattedTotalAllocated = formatCurrencyByCode(convertedTotalAllocated, selectedCurrency.code);
+  const formattedRemaining = formatCurrencyByCode(convertedRemaining, selectedCurrency.code);
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -62,7 +77,7 @@ const BudgetBreakdown = ({
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-medium text-neutral-700">Total Budget</span>
-                  <span className="font-semibold text-xl">${totalBudget.toLocaleString()}</span>
+                  <span className="font-semibold text-xl">{formattedTotalBudget}</span>
                 </div>
                 <div className="w-full bg-neutral-200 rounded-full h-4">
                   <div 
@@ -71,8 +86,8 @@ const BudgetBreakdown = ({
                   ></div>
                 </div>
                 <div className="flex justify-between text-sm mt-2">
-                  <span className="text-green-600">${totalAllocated.toLocaleString()} allocated</span>
-                  <span className="text-neutral-600">${remaining.toLocaleString()} remaining</span>
+                  <span className="text-green-600">{formattedTotalAllocated} allocated</span>
+                  <span className="text-neutral-600">{formattedRemaining} remaining</span>
                 </div>
               </div>
               
@@ -167,17 +182,25 @@ interface BudgetItemProps {
   color: string;
 }
 
-const BudgetItem = ({ title, amount, percentage, color }: BudgetItemProps) => (
-  <div>
-    <div className="flex justify-between items-center mb-1">
-      <span className="font-medium">{title}</span>
-      <span className="font-medium">${amount.toLocaleString()} ({Math.round(percentage)}%)</span>
+const BudgetItem = ({ title, amount, percentage, color }: BudgetItemProps) => {
+  const { selectedCurrency } = useCurrency();
+  
+  // Convert the amount to the selected currency
+  const convertedAmount = convertCurrency(amount, selectedCurrency.code);
+  const formattedAmount = formatCurrencyByCode(convertedAmount, selectedCurrency.code);
+  
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-1">
+        <span className="font-medium">{title}</span>
+        <span className="font-medium">{formattedAmount} ({Math.round(percentage)}%)</span>
+      </div>
+      <div className="w-full bg-neutral-200 rounded-full h-3">
+        <div className={`${color} h-3 rounded-full`} style={{ width: `${percentage}%` }}></div>
+      </div>
     </div>
-    <div className="w-full bg-neutral-200 rounded-full h-3">
-      <div className={`${color} h-3 rounded-full`} style={{ width: `${percentage}%` }}></div>
-    </div>
-  </div>
-);
+  );
+};
 
 interface BudgetTipProps {
   text: string;

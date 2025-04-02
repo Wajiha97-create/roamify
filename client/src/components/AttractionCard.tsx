@@ -3,6 +3,8 @@ import { type Attraction } from "@shared/schema";
 import { Star, StarHalf, MapPin, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { convertCurrency, formatCurrencyByCode } from "@/lib/currency";
 
 interface AttractionCardProps {
   attraction: Attraction;
@@ -55,6 +57,12 @@ const AttractionCard = ({ attraction }: AttractionCardProps) => {
     e.stopPropagation();
     setIsFavorite(!isFavorite);
   };
+  
+  const { selectedCurrency } = useCurrency();
+  
+  // Convert price to selected currency
+  const convertedPrice = convertCurrency(price, selectedCurrency.code);
+  const formattedPrice = formatCurrencyByCode(convertedPrice, selectedCurrency.code);
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden w-80 hover:shadow-lg transition-shadow">
@@ -92,7 +100,7 @@ const AttractionCard = ({ attraction }: AttractionCardProps) => {
         </div>
         <p className="text-neutral-700 text-sm mb-3">{description}</p>
         <div className="flex justify-between items-center">
-          <p className="text-lg font-semibold text-primary">${price}</p>
+          <p className="text-lg font-semibold text-primary">{formattedPrice}</p>
           <Button className="px-4 py-2 bg-primary hover:bg-blue-700 text-white font-medium rounded-lg text-sm transition">
             Book Now
           </Button>

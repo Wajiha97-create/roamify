@@ -4,6 +4,7 @@ import DestinationDetails from "@/pages/DestinationDetails";
 import NotFound from "@/pages/not-found";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 
 function Router() {
   return (
@@ -22,7 +23,11 @@ function Router() {
 }
 
 function App() {
-  return <Router />;
+  return (
+    <CurrencyProvider>
+      <Router />
+    </CurrencyProvider>
+  );
 }
 
 export default App;
