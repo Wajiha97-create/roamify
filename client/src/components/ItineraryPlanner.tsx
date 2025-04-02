@@ -83,36 +83,51 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
   // Generate trip itinerary
   const generateItinerary = async () => {
     setIsGenerating(true);
+    console.log("Starting trip generation with the following parameters:");
+    
+    const tripData = {
+      destinationId: selectedDestinationId,
+      startDate: dateRange.from.toISOString(),
+      endDate: dateRange.to?.toISOString(),
+      duration: tripDuration,
+      budget: budget,
+      preferences: preferences,
+      travelers: travelers,
+      tourGuideRequested: tourGuideRequested,
+    };
+    
+    console.log("Trip data:", tripData);
     
     try {
       // Create a trip in the database
+      console.log("Sending POST request to /api/trips");
       const response = await fetch('/api/trips', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          destinationId: selectedDestinationId,
-          startDate: dateRange.from.toISOString(),
-          endDate: dateRange.to?.toISOString(),
-          duration: tripDuration,
-          budget: budget,
-          preferences: preferences,
-          travelers: travelers,
-          tourGuideRequested: tourGuideRequested,
-        }),
+        body: JSON.stringify(tripData),
       });
       
+      console.log("Response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to create trip');
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to create trip: ${response.statusText} - ${errorText}`);
       }
       
       const trip = await response.json();
+      console.log("Trip created successfully:", trip);
+      
       setGeneratedTripId(trip.id);
+      console.log("Setting generatedTripId:", trip.id);
+      
       setStep(4);
+      console.log("Advanced to step 4");
     } catch (error) {
       console.error('Error creating trip:', error);
-      // Handle error appropriately
+      alert("There was an error creating your trip. Please try again.");
     } finally {
       setIsGenerating(false);
     }

@@ -224,7 +224,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      console.log("Trip created successfully:", newTrip);
+      // Generate trip details for each day
+      const tripDuration = newTrip.duration || 5; // Default to 5 days if not specified
+      const destination = await storage.getDestination(newTrip.destinationId);
+      const destinationName = destination ? destination.name : "Your Destination";
+      
+      // Create trip details for each day
+      for (let day = 1; day <= tripDuration; day++) {
+        const dayTitle = day === 1 
+          ? `Welcome to ${destinationName}` 
+          : day === tripDuration 
+            ? `Farewell to ${destinationName}` 
+            : `Exploring ${destinationName} - Day ${day}`;
+            
+        const activities = [
+          {
+            time: "08:00",
+            title: "Breakfast at hotel",
+            description: "Start your day with a delicious breakfast",
+            location: "Hotel",
+            type: "breakfast",
+            cost: Math.round(newTrip.budget * 0.01) // ~1% of budget
+          },
+          {
+            time: "10:00",
+            title: day === 1 
+              ? `${destinationName} Orientation Tour` 
+              : `${destinationName} ${newTrip.preferences && newTrip.preferences.length > 0 
+                  ? newTrip.preferences[Math.floor(Math.random() * newTrip.preferences.length)] 
+                  : 'Cultural'} Experience`,
+            description: "Explore the highlights of the area",
+            location: "City Center",
+            type: "sightseeing",
+            cost: Math.round(newTrip.budget * 0.02) // ~2% of budget
+          },
+          {
+            time: "13:00",
+            title: "Lunch break",
+            description: "Enjoy local cuisine at a recommended restaurant",
+            location: "Local Restaurant",
+            type: "lunch",
+            cost: Math.round(newTrip.budget * 0.015) // ~1.5% of budget
+          },
+          {
+            time: "15:00",
+            title: day === tripDuration 
+              ? "Souvenir Shopping" 
+              : `${destinationName} Attraction Visit`,
+            description: "Visit a popular local attraction",
+            location: "Tourist Area",
+            type: "sightseeing",
+            cost: Math.round(newTrip.budget * 0.025) // ~2.5% of budget
+          },
+          {
+            time: "19:00",
+            title: "Dinner experience",
+            description: "Savor the local flavors at a recommended venue",
+            location: "Restaurant District",
+            type: "dinner",
+            cost: Math.round(newTrip.budget * 0.03) // ~3% of budget
+          }
+        ];
+        
+        await storage.createTripDetail({
+          tripId: newTrip.id,
+          day: day,
+          title: dayTitle,
+          activities: activities
+        });
+      }
+      
+      console.log("Trip created successfully with details:", newTrip);
       res.status(201).json(newTrip);
     } catch (error) {
       console.error("Error creating trip:", error);

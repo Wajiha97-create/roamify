@@ -571,23 +571,41 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
   const [showMap, setShowMap] = useState(false);
   const [selectedView, setSelectedView] = useState<"timeline" | "details" | "tips">("timeline");
   
-  // This would normally fetch from the API
-  // const { data: tripDetails, isLoading } = useQuery<TripDetail[]>({
-  //   queryKey: [`/api/trips/${tripId}/details`],
-  //   enabled: !!tripId,
-  // });
+  // Fetch trip details
+  const { 
+    data: tripDetails, 
+    isLoading: isLoadingTripDetails,
+    error 
+  } = useQuery<TripDetail[]>({
+    queryKey: [`/api/trips/${tripId}/details`],
+    enabled: !!tripId,
+  });
   
-  // For demonstration purposes, we'll use mock data
-  const isLoading = false;
-  const mockDays = 5; // Number of days in the trip
+  // Fetch trip data to get duration
+  const { 
+    data: tripData, 
+    isLoading: isLoadingTripData 
+  } = useQuery({
+    queryKey: [`/api/trips/${tripId}`],
+    enabled: !!tripId,
+  });
+  
+  // Get trip data and trip details with loading state
+  const isLoading = isLoadingTripDetails || isLoadingTripData;
+  
+  // Get the number of days in the trip
+  const tripDuration = tripData?.duration || 5;
   
   // Get an array of day numbers (1 to number of days)
-  const dayNumbers = Array.from({ length: mockDays }, (_, i) => i + 1);
+  const dayNumbers = Array.from({ length: tripDuration }, (_, i) => i + 1);
   
-  // Get activities for the selected day
-  const dayActivities = generateDayActivities(selectedDay, destinationName);
+  // Get details for the selected day from fetched data, or fallback to generated
+  const selectedDayDetail = tripDetails?.find(detail => detail.day === selectedDay);
   
-  // Get day summary
+  // Parse activities from the trip detail or fall back to generated data
+  const dayActivities = selectedDayDetail?.activities as Activity[] || generateDayActivities(selectedDay, destinationName);
+  
+  // Get day summary (either from API or generate)
   const daySummary = generateDaySummary(selectedDay, destinationName);
   
   // For currency conversion
@@ -765,7 +783,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                     <div className="absolute top-0 bottom-0 left-16 w-px bg-neutral-200"></div>
                     
                     <div className="space-y-8">
-                      {generateDayActivities(day, destinationName).map((activity) => {
+                      {dayActivities.map((activity) => {
                         const activityCost = convertCurrency(activity.cost, selectedCurrency.code);
                         const formattedCost = formatCurrencyByCode(activityCost, selectedCurrency.code);
                         
