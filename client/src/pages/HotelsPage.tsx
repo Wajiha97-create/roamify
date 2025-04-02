@@ -62,9 +62,9 @@ const HotelsPage = () => {
         hotel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (hotel.description && hotel.description.toLowerCase().includes(searchQuery.toLowerCase()));
       
-      const matchesCountry = countryFilter === "" || hotel.country === countryFilter;
+      const matchesCountry = countryFilter === "all_countries" || hotel.country === countryFilter;
       
-      const matchesCity = cityFilter === "" || hotel.destinationName === cityFilter;
+      const matchesCity = cityFilter === "all_cities" || hotel.destinationName === cityFilter;
       
       const matchesType = typeFilter === "" || hotel.type === typeFilter;
       
@@ -75,8 +75,8 @@ const HotelsPage = () => {
     : [];
 
   const clearFilters = () => {
-    setCountryFilter("");
-    setCityFilter("");
+    setCountryFilter("all_countries");
+    setCityFilter("all_cities");
     setMaxPrice(1000);
     setTypeFilter("");
     setSearchQuery("");
@@ -143,7 +143,7 @@ const HotelsPage = () => {
                         <SelectValue placeholder="All countries" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All countries</SelectItem>
+                        <SelectItem value="all_countries">All countries</SelectItem>
                         {countries.map((country) => (
                           <SelectItem key={country} value={country}>
                             {country}
@@ -160,7 +160,7 @@ const HotelsPage = () => {
                         <SelectValue placeholder="All cities" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All cities</SelectItem>
+                        <SelectItem value="all_cities">All cities</SelectItem>
                         {cities.map((city) => (
                           <SelectItem key={city} value={city}>
                             {city}
