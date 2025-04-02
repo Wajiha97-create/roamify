@@ -88,9 +88,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const hotels = await storage.getHotels(destinationId);
-      res.json(hotels);
+      
+      // Get destination info to enrich hotel data
+      const destination = await storage.getDestination(destinationId);
+      
+      // Add destination name and country to each hotel
+      const enrichedHotels = hotels.map(hotel => ({
+        ...hotel,
+        destinationName: destination?.name,
+        country: destination?.country
+      }));
+      
+      res.json(enrichedHotels);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch hotels" });
+    }
+  });
+  
+  app.get("/api/hotels", async (req, res) => {
+    try {
+      // Get all destinations
+      const destinations = await storage.getDestinations();
+      const allHotels = [];
+      
+      // For each destination, get hotels and add destination details
+      for (const destination of destinations) {
+        const hotels = await storage.getHotels(destination.id);
+        const enrichedHotels = hotels.map(hotel => ({
+          ...hotel,
+          destinationName: destination.name,
+          country: destination.country
+        }));
+        allHotels.push(...enrichedHotels);
+      }
+      
+      res.json(allHotels);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch all hotels" });
     }
   });
   
@@ -121,9 +155,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const attractions = await storage.getAttractions(destinationId);
-      res.json(attractions);
+      
+      // Get destination info to enrich attraction data
+      const destination = await storage.getDestination(destinationId);
+      
+      // Add destination name and country to each attraction
+      const enrichedAttractions = attractions.map(attraction => ({
+        ...attraction,
+        destinationName: destination?.name,
+        country: destination?.country
+      }));
+      
+      res.json(enrichedAttractions);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch attractions" });
+    }
+  });
+  
+  app.get("/api/attractions", async (req, res) => {
+    try {
+      // Get all destinations
+      const destinations = await storage.getDestinations();
+      const allAttractions = [];
+      
+      // For each destination, get attractions and add destination details
+      for (const destination of destinations) {
+        const attractions = await storage.getAttractions(destination.id);
+        const enrichedAttractions = attractions.map(attraction => ({
+          ...attraction,
+          destinationName: destination.name,
+          country: destination.country
+        }));
+        allAttractions.push(...enrichedAttractions);
+      }
+      
+      res.json(allAttractions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch all attractions" });
     }
   });
   
