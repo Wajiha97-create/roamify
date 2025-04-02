@@ -31,8 +31,7 @@ const formSchema = z.object({
   destination: z.string().min(2, "Please enter a destination"),
   startDate: z.string().min(1, "Please select a start date"),
   endDate: z.string().min(1, "Please select an end date"),
-  budget: z.number().min(1, "Budget must be greater than 0"),
-  tripType: z.string().optional()
+  budget: z.number().min(1, "Budget must be greater than 0")
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -55,24 +54,7 @@ const BudgetInput = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      const response = await apiRequest("POST", "/api/destinations/search", {
-        ...data,
-        tripType: selectedType,
-        travelers: 2 // Default to 2 travelers
-      });
-      
-      const destinations = await response.json();
-      
-      if (destinations && destinations.length > 0) {
-        // Navigate to the first destination
-        setLocation(`/destinations/${destinations[0].id}`);
-      } else {
-        toast({
-          title: "No destinations found",
-          description: "Try adjusting your search criteria.",
-          variant: "destructive"
-        });
-      }
+      setLocation(`/plan?destination=${encodeURIComponent(data.destination)}&startDate=${data.startDate}&endDate=${data.endDate}&budget=${data.budget}`);
     } catch (error) {
       toast({
         title: "Error",
@@ -177,33 +159,7 @@ const BudgetInput = () => {
             )}
           />
           
-          <FormField
-            control={form.control}
-            name="tripType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium text-neutral-600 mb-2">Trip Type</FormLabel>
-                <div className="grid grid-cols-3 gap-2">
-                  {tripTypes.map(type => (
-                    <div 
-                      key={type.id}
-                      className={`trip-type-option cursor-pointer rounded-lg p-3 text-center transition-colors ${
-                        selectedType === type.id
-                          ? 'bg-primary bg-opacity-10 border-2 border-primary'
-                          : 'bg-neutral-100 hover:bg-neutral-200'
-                      }`}
-                      onClick={() => selectTripType(type.id)}
-                    >
-                      <div className={selectedType === type.id ? "text-primary" : "text-accent"}>
-                        {type.icon}
-                      </div>
-                      <div className="text-sm font-medium">{type.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </FormItem>
-            )}
-          />
+          
           
           <Button 
             type="submit" 
