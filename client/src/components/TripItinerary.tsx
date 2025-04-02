@@ -594,10 +594,12 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
   const isLoading = isLoadingTripDetails || isLoadingTripData;
   
   // Get the number of days in the trip
-  const tripDuration = tripData && 'duration' in tripData ? tripData.duration : 5;
+  const tripDuration = tripData && typeof tripData === 'object' && 'duration' in tripData 
+    ? (tripData.duration as number) 
+    : 5;
   
   // Get an array of day numbers (1 to number of days)
-  const dayNumbers = Array.from({ length: tripDuration }, (_, i) => i + 1);
+  const dayNumbers: number[] = Array.from({ length: tripDuration as number }, (_, i) => i + 1);
   
   // Get details for the selected day from fetched data, or fallback to generated
   const selectedDayDetail = tripDetails?.find(detail => detail.day === selectedDay);
@@ -897,8 +899,8 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                     <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-6">
                       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                         <div>
-                          <h3 className="text-xl font-semibold mb-2">{generateDaySummary(day, destinationName).title}</h3>
-                          <p className="text-gray-600">{generateDaySummary(day, destinationName).description}</p>
+                          <h3 className="text-xl font-semibold mb-2">{generateDaySummary(day as number, destinationName).title}</h3>
+                          <p className="text-gray-600">{generateDaySummary(day as number, destinationName).description}</p>
                         </div>
                         
                         <div className="bg-white rounded-md p-3 shadow-sm flex items-center space-x-4 min-w-[200px]">

@@ -85,6 +85,21 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
     setIsGenerating(true);
     console.log("Starting trip generation with the following parameters:");
     
+    // Validate required fields before proceeding
+    if (!selectedDestinationId) {
+      console.error("No destination selected");
+      alert("Please select a destination before generating an itinerary.");
+      setIsGenerating(false);
+      return;
+    }
+    
+    if (!dateRange.from) {
+      console.error("No start date selected");
+      alert("Please select a date range before generating an itinerary.");
+      setIsGenerating(false);
+      return;
+    }
+    
     const tripData = {
       destinationId: selectedDestinationId,
       startDate: dateRange.from.toISOString(),
@@ -94,6 +109,7 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
       preferences: preferences,
       travelers: travelers,
       tourGuideRequested: tourGuideRequested,
+      tripType: "City" // Default type
     };
     
     console.log("Trip data:", tripData);
@@ -119,6 +135,17 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
       
       const trip = await response.json();
       console.log("Trip created successfully:", trip);
+      
+      // Get trip details
+      console.log("Fetching trip details for trip ID:", trip.id);
+      const detailsResponse = await fetch(`/api/trips/${trip.id}/details`);
+      
+      if (!detailsResponse.ok) {
+        console.error("Failed to load trip details, but continuing...");
+      } else {
+        const details = await detailsResponse.json();
+        console.log("Trip details loaded:", details);
+      }
       
       setGeneratedTripId(trip.id);
       console.log("Setting generatedTripId:", trip.id);
