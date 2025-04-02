@@ -8,10 +8,24 @@ import DestinationCard from "@/components/DestinationCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Globe, MapPin, Star } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import { ChevronLeft, ChevronRight, Globe, MapPin, Star, CalendarIcon, Plus, Minus } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
 
 const Home = () => {
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({
+    from: undefined,
+    to: undefined,
+  });
+  const [travelers, setTravelers] = useState(2);
+  const [budget, setBudget] = useState(2000);
+  
   // Query to get all destinations
   const { data: destinations, isLoading } = useQuery<Destination[]>({
     queryKey: ["/api/destinations"],
@@ -41,14 +55,13 @@ const Home = () => {
                 Find Your Perfect Destination
               </h1>
               <p className="text-xl text-blue-100 mb-8">
-                Tell us your budget and dates, and we'll help you discover the ideal destinations for your next adventure.
+                Tell us your budget and dates, and we'll help you discover the ideal destinations for your trip.
               </p>
-              
+
               {/* Trip Planning Form */}
               <div className="space-y-6 bg-white/10 p-6 rounded-xl backdrop-blur-sm">
                 <BudgetInput />
                 
-                {/* Date Selection */}
                 <div>
                   <Label className="text-white mb-2 block">When do you want to travel?</Label>
                   <Popover>
@@ -80,7 +93,6 @@ const Home = () => {
                   </Popover>
                 </div>
 
-                {/* Travelers Count */}
                 <div>
                   <Label className="text-white mb-2 block">Number of Travelers</Label>
                   <div className="flex items-center space-x-2">
@@ -108,11 +120,8 @@ const Home = () => {
                   className="w-full bg-white text-primary hover:bg-white/90"
                   onClick={() => {
                     if (budget && dateRange.from && dateRange.to) {
-                      setVisibleDestinations(3);
-                      window.scrollTo({
-                        top: document.getElementById('recommendations')?.offsetTop,
-                        behavior: 'smooth'
-                      });
+                      // Trigger destination search with these parameters
+                      handleSearch();
                     }
                   }}
                 >
@@ -132,7 +141,7 @@ const Home = () => {
       </section>
 
       {/* Destination Recommendations */}
-      <section id="recommendations" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold font-heading text-neutral-800">Recommended Destinations</h2>
           <div className="flex space-x-2">
