@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRoute, useLocation } from "wouter";
+import { useRoute, useLocation, Link } from "wouter";
 import { Destination, Hotel, Attraction, Trip, BudgetAllocation } from "@shared/schema";
 import BudgetBreakdown from "@/components/BudgetBreakdown";
 import HotelCard from "@/components/HotelCard";
@@ -88,7 +88,9 @@ const DestinationDetails = () => {
           <CardContent className="p-10 text-center">
             <h2 className="text-2xl font-bold mb-4">Destination Not Found</h2>
             <p className="text-neutral-600 mb-6">The destination you're looking for doesn't exist or has been removed.</p>
-            <Button onClick={() => setLocation("/")}>Return to Home</Button>
+            <Link href="/">
+              <Button>Return to Home</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -171,9 +173,11 @@ const DestinationDetails = () => {
                   ))}
                 </ul>
                 <div className="mt-6">
-                  <Button className="w-full" onClick={() => setLocation("/plan")}>
-                    Create Personalized Itinerary
-                  </Button>
+                  <Link href="/plan">
+                    <Button className="w-full">
+                      Create Personalized Itinerary
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
