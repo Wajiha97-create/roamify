@@ -6,6 +6,7 @@ import { getTourGuides } from "@/lib/api";
 import BudgetInput from "@/components/BudgetInput";
 import DestinationCard from "@/components/DestinationCard";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Globe } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
