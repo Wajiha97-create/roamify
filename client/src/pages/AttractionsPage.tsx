@@ -132,7 +132,7 @@ const AttractionsPage = () => {
                         <SelectValue placeholder="All countries" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All countries</SelectItem>
+                        <SelectItem value="all">All countries</SelectItem>
                         {countries.map((country) => (
                           <SelectItem key={country} value={country}>
                             {country}

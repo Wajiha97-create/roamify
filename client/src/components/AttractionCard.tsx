@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { convertCurrency, formatCurrencyByCode } from "@/lib/currency";
+import { Link } from "wouter";
+import { Camera } from "lucide-react";
 //import { useRouter } from 'next/router'; // Removed useRouter import
 
 interface AttractionCardProps {
