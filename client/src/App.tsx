@@ -24,7 +24,7 @@ function Router() {
           <Route path="/attractions" component={AttractionsPage} />
           <Route path="/agents" component={TourAgents} />
           <Route path="/agents/:id" component={AgentDetail} />
-          <Route path="/trips/:id" component={DestinationDetails} />
+          <Route path="/trips/:id" component={TripItinerary} />
           <Route component={NotFound} />
         </Switch>
       </main>
