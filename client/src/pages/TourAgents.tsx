@@ -12,8 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TourAgents() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [specialtyFilter, setSpecialtyFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("all");
+  const [specialtyFilter, setSpecialtyFilter] = useState("all");
   
   // Fetch tour guides data from API
   const { data: tourGuides, isLoading, error } = useQuery({
@@ -28,10 +28,10 @@ export default function TourAgents() {
                          agent.location.toLowerCase().includes(searchTerm.toLowerCase());
     
     // Location filter
-    const matchesLocation = locationFilter === "" || agent.location.includes(locationFilter);
+    const matchesLocation = locationFilter === "" || locationFilter === "all" || agent.location.includes(locationFilter);
     
     // Specialty filter
-    const matchesSpecialty = specialtyFilter === "" || agent.specialties.includes(specialtyFilter);
+    const matchesSpecialty = specialtyFilter === "" || specialtyFilter === "all" || agent.specialties.includes(specialtyFilter);
     
     return matchesSearch && matchesLocation && matchesSpecialty;
   }) || [];
@@ -64,7 +64,7 @@ export default function TourAgents() {
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Locations</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
                 <SelectItem value="Barcelona">Barcelona</SelectItem>
                 <SelectItem value="Madrid">Madrid</SelectItem>
                 <SelectItem value="Paris">Paris</SelectItem>
@@ -79,7 +79,7 @@ export default function TourAgents() {
                 <SelectValue placeholder="Specialty" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Specialties</SelectItem>
+                <SelectItem value="all">All Specialties</SelectItem>
                 <SelectItem value="Cultural">Cultural</SelectItem>
                 <SelectItem value="Historical">Historical</SelectItem>
                 <SelectItem value="Food">Food & Culinary</SelectItem>
