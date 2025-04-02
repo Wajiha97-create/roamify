@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Destination } from "@shared/schema";
+import { Destination, TripSearchParams } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -10,11 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, MapPin, User, DollarSign } from "lucide-react";
+import { CalendarIcon, MapPin, User, DollarSign, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { convertCurrency, formatCurrencyByCode } from "@/lib/currency";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { searchDestinations } from "@/lib/api";
 
 // Preference options
 const PREFERENCES = [
@@ -46,11 +48,65 @@ export default function ItineraryPlannerPage() {
     from: undefined,
     to: undefined,
   });
+  
+  // Destination search state
+  const [searchType, setSearchType] = useState<"city" | "country">("city");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState<Destination[]>([]);
 
-  // Fetch destinations
+  // Fetch all destinations
   const { data: destinations = [] } = useQuery<Destination[]>({
     queryKey: ['/api/destinations'],
   });
+  
+  // Handle destination search
+  const handleSearch = async () => {
+    if (!searchTerm) return;
+    
+    setIsSearching(true);
+    try {
+      const searchParams: TripSearchParams = {
+        [searchType === "city" ? "city" : "country"]: searchTerm,
+        travelers: travelers, // Add required field travelers
+      };
+      
+      // First try to filter from already fetched destinations
+      let results = destinations.filter(d => 
+        searchType === "city" 
+          ? d.name.toLowerCase().includes(searchTerm.toLowerCase())
+          : d.country.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      
+      // If we have results, use them
+      if (results.length > 0) {
+        setSearchResults(results);
+      } else {
+        // Otherwise, try to fetch from API
+        const apiResults = await searchDestinations(searchParams);
+        setSearchResults(apiResults);
+      }
+    } catch (error) {
+      console.error("Error searching destinations:", error);
+      // If search fails, show all destinations
+      setSearchResults(destinations);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+  
+  // Auto-search when searchTerm changes
+  useEffect(() => {
+    if (searchTerm.length > 2) {
+      const debounce = setTimeout(() => {
+        handleSearch();
+      }, 300);
+      
+      return () => clearTimeout(debounce);
+    } else if (searchTerm === "") {
+      setSearchResults(destinations);
+    }
+  }, [searchTerm, searchType, destinations]);
 
   // Currency conversion
   const { selectedCurrency } = useCurrency();
@@ -129,9 +185,44 @@ export default function ItineraryPlannerPage() {
               <CardTitle>Choose Your Destination</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="mb-6 space-y-4">
+                <div className="flex items-center gap-2">
+                  <Select value={searchType} onValueChange={(value) => setSearchType(value as "city" | "country")}>
+                    <SelectTrigger className="w-36">
+                      <SelectValue placeholder="Search by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="city">City</SelectItem>
+                      <SelectItem value="country">Country</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                      className="pl-10"
+                      placeholder={`Search by ${searchType}...`}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                {searchTerm && (
+                  <p className="text-sm text-muted-foreground">
+                    {isSearching 
+                      ? "Searching..." 
+                      : searchResults.length > 0
+                        ? `Found ${searchResults.length} destinations matching "${searchTerm}"`
+                        : `No destinations found matching "${searchTerm}"`
+                    }
+                  </p>
+                )}
+              </div>
+              
               <RadioGroup value={selectedDestinationId} onValueChange={setSelectedDestinationId}>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {destinations.map((destination) => (
+                  {(searchTerm ? searchResults : destinations).map((destination) => (
                     <div
                       key={destination.id}
                       className={`border rounded-lg overflow-hidden cursor-pointer transition-all
@@ -156,6 +247,12 @@ export default function ItineraryPlannerPage() {
                   ))}
                 </div>
               </RadioGroup>
+              
+              {(searchTerm ? searchResults : destinations).length === 0 && !isSearching && (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">No destinations found. Try a different search term.</p>
+                </div>
+              )}
               
               <div className="mt-6 flex justify-end">
                 <Button
@@ -242,7 +339,16 @@ export default function ItineraryPlannerPage() {
                         <Calendar
                           mode="range"
                           selected={dateRange}
-                          onSelect={(range) => setDateRange(range || { from: undefined, to: undefined })}
+                          onSelect={(range) => {
+                            if (range) {
+                              setDateRange({ 
+                                from: range.from, 
+                                to: range.to || range.from // Ensure .to is always defined
+                              });
+                            } else {
+                              setDateRange({ from: undefined, to: undefined });
+                            }
+                          }}
                           initialFocus
                           numberOfMonths={2}
                         />
