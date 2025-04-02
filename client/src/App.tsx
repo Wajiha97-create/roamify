@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import TripItinerary from "@/components/TripItinerary";
 import HotelDetails from "@/pages/HotelDetails"; // Import the HotelDetails component
+import AttractionDetails from "@/pages/AttractionDetails"; // Import the AttractionDetails component
 
 function Router() {
   return (
