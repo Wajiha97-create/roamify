@@ -123,56 +123,76 @@ const AttractionsPage = () => {
         {showFilters && (
           <Card className="mt-4">
             <CardContent className="pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <Label htmlFor="country-filter">Country</Label>
-                  <Select value={countryFilter} onValueChange={setCountryFilter}>
-                    <SelectTrigger id="country-filter" className="mt-1">
-                      <SelectValue placeholder="All countries" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All countries</SelectItem>
-                      {countries.map((country) => (
-                        <SelectItem key={country} value={country}>
-                          {country}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="country-filter">Country</Label>
+                    <Select value={countryFilter} onValueChange={setCountryFilter}>
+                      <SelectTrigger id="country-filter" className="mt-1">
+                        <SelectValue placeholder="All countries" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">All countries</SelectItem>
+                        {countries.map((country) => (
+                          <SelectItem key={country} value={country}>
+                            {country}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="city-filter">City</Label>
+                    <Select value={cityFilter} onValueChange={setCityFilter}>
+                      <SelectTrigger id="city-filter" className="mt-1">
+                        <SelectValue placeholder="All cities" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">All cities</SelectItem>
+                        {cities.map((city) => (
+                          <SelectItem key={city} value={city}>
+                            {city}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                
+
                 <div>
-                  <Label htmlFor="city-filter">City</Label>
-                  <Select value={cityFilter} onValueChange={setCityFilter}>
-                    <SelectTrigger id="city-filter" className="mt-1">
-                      <SelectValue placeholder="All cities" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All cities</SelectItem>
-                      {cities.map((city) => (
-                        <SelectItem key={city} value={city}>
-                          {city}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label>Attraction Types</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                    {attractionTypes.map((type) => (
+                      <Button
+                        key={type}
+                        variant={typeFilter === type ? "default" : "outline"}
+                        className="justify-start"
+                        onClick={() => setTypeFilter(typeFilter === type ? "" : type)}
+                      >
+                        {type}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
-                
-                <div>
-                  <Label htmlFor="type-filter">Attraction Type</Label>
-                  <Select value={typeFilter} onValueChange={setTypeFilter}>
-                    <SelectTrigger id="type-filter" className="mt-1">
-                      <SelectValue placeholder="All types" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All types</SelectItem>
-                      {attractionTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <Label>Price Range</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <Input 
+                        type="number" 
+                        placeholder="Min" 
+                        className="w-full"
+                      />
+                      <span>to</span>
+                      <Input 
+                        type="number" 
+                        placeholder="Max" 
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
               
