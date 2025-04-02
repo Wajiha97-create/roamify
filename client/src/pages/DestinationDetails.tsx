@@ -88,9 +88,9 @@ const DestinationDetails = () => {
           <CardContent className="p-10 text-center">
             <h2 className="text-2xl font-bold mb-4">Destination Not Found</h2>
             <p className="text-neutral-600 mb-6">The destination you're looking for doesn't exist or has been removed.</p>
-            <Link href="/">
+            <a href="/" className="no-underline">
               <Button>Return to Home</Button>
-            </Link>
+            </a>
           </CardContent>
         </Card>
       </div>
@@ -173,11 +173,11 @@ const DestinationDetails = () => {
                   ))}
                 </ul>
                 <div className="mt-6">
-                  <Link href="/plan">
+                  <a href="/plan" className="w-full no-underline block">
                     <Button className="w-full">
                       Create Personalized Itinerary
                     </Button>
-                  </Link>
+                  </a>
                 </div>
               </div>
             </div>
