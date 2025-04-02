@@ -253,16 +253,25 @@ export class MemStorage implements IStorage {
   async createTrip(trip: InsertTrip): Promise<Trip> {
     const id = this.tripIdCounter++;
     const createdAt = new Date();
+    
+    // Set default values for all optional fields
     const newTrip: Trip = { 
       ...trip, 
       id, 
       createdAt: createdAt,
       travelers: trip.travelers || 1,
+      duration: trip.duration || 1,
       userId: trip.userId || null,
       hotelId: trip.hotelId || null,
-      totalCost: trip.totalCost || null
+      totalCost: trip.totalCost || null,
+      preferences: trip.preferences || [],
+      tripType: trip.tripType || null,
+      tourGuideRequested: trip.tourGuideRequested === true ? true : false,
+      endDate: trip.endDate || null
     };
+    
     this.trips.set(id, newTrip);
+    console.log("Created trip:", newTrip);
     return newTrip;
   }
   

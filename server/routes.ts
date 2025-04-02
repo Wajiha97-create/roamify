@@ -176,8 +176,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/trips", async (req, res) => {
     try {
-      const trip = req.body;
-      const newTrip = await storage.createTrip(trip);
+      const tripData = req.body;
+      console.log("Received trip data:", JSON.stringify(tripData, null, 2));
+      
+      // Validate required fields
+      if (!tripData.destinationId) {
+        return res.status(400).json({ message: "Destination ID is required" });
+      }
+      
+      if (!tripData.startDate) {
+        return res.status(400).json({ message: "Start date is required" });
+      }
+      
+      if (!tripData.budget) {
+        return res.status(400).json({ message: "Budget is required" });
+      }
+      
+      // Create the trip with prepared data
+      const processedData = {
+        ...tripData,
+        // Ensure travelers has a value
+        travelers: tripData.travelers || 1,
+        // Ensure duration is calculated if missing
+        duration: tripData.duration || 
+          (tripData.endDate ? Math.ceil((new Date(tripData.endDate).getTime() - new Date(tripData.startDate).getTime()) / (1000 * 60 * 60 * 24)) : 1),
+        // Handle preferences field
+        preferences: Array.isArray(tripData.preferences) ? tripData.preferences : [],
+        // Set default for tourGuideRequested
+        tourGuideRequested: tripData.tourGuideRequested === true
+      };
+      
+      console.log("Processed trip data:", JSON.stringify(processedData, null, 2));
+      
+      // Create the trip
+      const newTrip = await storage.createTrip(processedData);
       
       // Create default budget allocation
       if (newTrip.budget) {
@@ -192,9 +224,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
+      console.log("Trip created successfully:", newTrip);
       res.status(201).json(newTrip);
     } catch (error) {
-      res.status(500).json({ message: "Failed to create trip" });
+      console.error("Error creating trip:", error);
+      res.status(500).json({ message: "Failed to create trip", error: String(error) });
     }
   });
   

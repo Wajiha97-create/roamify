@@ -81,15 +81,19 @@ export const trips = pgTable("trips", {
   userId: integer("user_id"),
   destinationId: integer("destination_id").notNull(),
   startDate: date("start_date").notNull(),
-  endDate: date("end_date").notNull(),
+  endDate: date("end_date"),
+  duration: integer("duration").notNull().default(1),
   budget: integer("budget").notNull(),
   travelers: integer("travelers").notNull().default(1),
-  tripType: text("trip_type").notNull(), // "Beach", "City", "Mountain", etc.
+  tripType: text("trip_type"), // "Beach", "City", "Mountain", etc.
+  preferences: text("preferences").array(), // Array of preferences
   hotelId: integer("hotel_id"),
   totalCost: integer("total_cost"),
+  tourGuideRequested: boolean("tour_guide_requested").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Extend the insertTripSchema with additional validation
 export const insertTripSchema = createInsertSchema(trips).omit({
   id: true,
   createdAt: true,
