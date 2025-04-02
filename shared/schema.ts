@@ -145,6 +145,15 @@ export type InsertTripDetail = z.infer<typeof insertTripDetailSchema>;
 export type BudgetAllocation = typeof budgetAllocations.$inferSelect;
 export type InsertBudgetAllocation = z.infer<typeof insertBudgetAllocationSchema>;
 
+// Country and city-related schemas
+export const countrySchema = z.object({
+  name: z.string(),
+  code: z.string(),
+  cities: z.array(z.string())
+});
+
+export type Country = z.infer<typeof countrySchema>;
+
 // Additional schemas for API requests
 export const tripSearchSchema = z.object({
   destination: z.string().optional(),

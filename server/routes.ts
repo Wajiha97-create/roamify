@@ -7,6 +7,31 @@ import { z } from "zod";
 export async function registerRoutes(app: Express): Promise<Server> {
   // All routes should be prefixed with /api
   
+  // Country and City endpoints
+  app.get("/api/countries", async (req, res) => {
+    try {
+      const countries = await storage.getCountries();
+      res.json(countries);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch countries" });
+    }
+  });
+
+  app.get("/api/countries/:code", async (req, res) => {
+    try {
+      const code = req.params.code;
+      const country = await storage.getCountryByCode(code);
+      
+      if (!country) {
+        return res.status(404).json({ message: "Country not found" });
+      }
+      
+      res.json(country);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch country" });
+    }
+  });
+  
   // Destinations endpoints
   app.get("/api/destinations", async (req, res) => {
     try {

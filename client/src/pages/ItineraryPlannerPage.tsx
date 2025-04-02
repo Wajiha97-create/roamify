@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Destination, TripSearchParams } from "@shared/schema";
+import { Destination, TripSearchParams, Country } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -10,13 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, MapPin, User, DollarSign, Search } from "lucide-react";
+import { CalendarIcon, MapPin, User, DollarSign, Search, Globe, Building } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { convertCurrency, formatCurrencyByCode } from "@/lib/currency";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { searchDestinations } from "@/lib/api";
+import { searchDestinations, getCountries } from "@/lib/api";
 
 // Preference options
 const PREFERENCES = [
@@ -55,6 +55,11 @@ export default function ItineraryPlannerPage() {
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [searchResults, setSearchResults] = useState<Destination[]>([]);
 
+  // Fetch all countries
+  const { data: countries = [] } = useQuery<Country[]>({
+    queryKey: ['/api/countries'],
+  });
+  
   // Fetch all destinations
   const { data: destinations = [] } = useQuery<Destination[]>({
     queryKey: ['/api/destinations'],
@@ -189,23 +194,61 @@ export default function ItineraryPlannerPage() {
                 <div className="flex items-center gap-2">
                   <Select value={searchType} onValueChange={(value) => setSearchType(value as "city" | "country")}>
                     <SelectTrigger className="w-36">
-                      <SelectValue placeholder="Search by" />
+                      {searchType === "city" ? (
+                        <div className="flex items-center">
+                          <Building className="mr-2 h-4 w-4" />
+                          <span>City</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center">
+                          <Globe className="mr-2 h-4 w-4" />
+                          <span>Country</span>
+                        </div>
+                      )}
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="city">City</SelectItem>
-                      <SelectItem value="country">Country</SelectItem>
+                      <SelectItem value="city">
+                        <div className="flex items-center">
+                          <Building className="mr-2 h-4 w-4" />
+                          <span>City</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="country">
+                        <div className="flex items-center">
+                          <Globe className="mr-2 h-4 w-4" />
+                          <span>Country</span>
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      className="pl-10"
-                      placeholder={`Search by ${searchType}...`}
+                  {searchType === "country" ? (
+                    <Select 
+                      onValueChange={(value) => setSearchTerm(value)}
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Select a country" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[200px]">
+                        {countries.map((country) => (
+                          <SelectItem key={country.code} value={country.name}>
+                            {country.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <Input
+                        className="pl-10"
+                        placeholder="Search by city..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 {searchTerm && (
@@ -217,6 +260,29 @@ export default function ItineraryPlannerPage() {
                         : `No destinations found matching "${searchTerm}"`
                     }
                   </p>
+                )}
+
+                {/* Show country cities if a country is selected */}
+                {searchType === "country" && searchTerm && (
+                  <div className="mt-4">
+                    <Label className="mb-2 block">Cities in {searchTerm}</Label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                      {countries.find(c => c.name === searchTerm)?.cities.map((city) => (
+                        <Badge 
+                          key={city} 
+                          className="cursor-pointer"
+                          variant="outline"
+                          onClick={() => {
+                            setSearchType("city");
+                            setSearchTerm(city);
+                          }}
+                        >
+                          <Building className="h-3 w-3 mr-1" />
+                          {city}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
               
@@ -239,7 +305,10 @@ export default function ItineraryPlannerPage() {
                       <div className="p-4 flex justify-between items-start">
                         <div>
                           <h3 className="font-medium">{destination.name}</h3>
-                          <p className="text-sm text-muted-foreground">{destination.country}</p>
+                          <p className="text-sm text-muted-foreground flex items-center">
+                            <Globe className="h-3 w-3 mr-1" />
+                            {destination.country}
+                          </p>
                         </div>
                         <RadioGroupItem value={destination.id.toString()} id={`destination-${destination.id}`} />
                       </div>

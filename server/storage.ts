@@ -6,7 +6,8 @@ import {
   Trip, InsertTrip,
   TripDetail, InsertTripDetail,
   BudgetAllocation, InsertBudgetAllocation,
-  TripSearchParams
+  TripSearchParams,
+  Country
 } from "@shared/schema";
 
 // Extended storage interface with all CRUD methods we need
@@ -21,6 +22,10 @@ export interface IStorage {
   getDestination(id: number): Promise<Destination | undefined>;
   createDestination(destination: InsertDestination): Promise<Destination>;
   searchDestinations(params: TripSearchParams): Promise<Destination[]>;
+  
+  // Country and City methods
+  getCountries(): Promise<Country[]>;
+  getCountryByCode(code: string): Promise<Country | undefined>;
   
   // Hotel methods
   getHotels(destinationId: number): Promise<Hotel[]>;
@@ -58,6 +63,7 @@ export class MemStorage implements IStorage {
   private trips: Map<number, Trip>;
   private tripDetails: Map<number, TripDetail>;
   private budgetAllocations: Map<number, BudgetAllocation>;
+  private countries: Map<string, Country>;
   
   private userIdCounter: number;
   private destinationIdCounter: number;
@@ -75,6 +81,7 @@ export class MemStorage implements IStorage {
     this.trips = new Map();
     this.tripDetails = new Map();
     this.budgetAllocations = new Map();
+    this.countries = new Map();
     
     this.userIdCounter = 1;
     this.destinationIdCounter = 1;
@@ -148,6 +155,15 @@ export class MemStorage implements IStorage {
     }
     
     return results;
+  }
+  
+  // Country and City methods
+  async getCountries(): Promise<Country[]> {
+    return Array.from(this.countries.values());
+  }
+  
+  async getCountryByCode(code: string): Promise<Country | undefined> {
+    return this.countries.get(code);
   }
   
   // Hotel methods
@@ -275,6 +291,64 @@ export class MemStorage implements IStorage {
   
   // Initialize with sample data for development
   private initializeData() {
+    // Initialize countries and cities
+    const countries: Country[] = [
+      {
+        name: "United States",
+        code: "US",
+        cities: ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Francisco"]
+      },
+      {
+        name: "Spain",
+        code: "ES",
+        cities: ["Madrid", "Barcelona", "Valencia", "Seville", "Málaga", "Bilbao", "Granada", "Palma de Mallorca", "Tenerife", "Córdoba"]
+      },
+      {
+        name: "France",
+        code: "FR",
+        cities: ["Paris", "Marseille", "Lyon", "Toulouse", "Nice", "Nantes", "Strasbourg", "Montpellier", "Bordeaux", "Lille"]
+      },
+      {
+        name: "Italy",
+        code: "IT",
+        cities: ["Rome", "Milan", "Naples", "Turin", "Palermo", "Genoa", "Bologna", "Florence", "Bari", "Venice"]
+      },
+      {
+        name: "Japan",
+        code: "JP",
+        cities: ["Tokyo", "Osaka", "Kyoto", "Yokohama", "Sapporo", "Nagoya", "Fukuoka", "Kobe", "Hiroshima", "Sendai"]
+      },
+      {
+        name: "United Kingdom",
+        code: "GB",
+        cities: ["London", "Manchester", "Birmingham", "Edinburgh", "Glasgow", "Liverpool", "Bristol", "Leeds", "Newcastle", "Sheffield"]
+      },
+      {
+        name: "Germany",
+        code: "DE",
+        cities: ["Berlin", "Hamburg", "Munich", "Cologne", "Frankfurt", "Stuttgart", "Düsseldorf", "Leipzig", "Dortmund", "Essen"]
+      },
+      {
+        name: "Australia",
+        code: "AU",
+        cities: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Gold Coast", "Canberra", "Newcastle", "Wollongong", "Hobart"]
+      },
+      {
+        name: "Greece",
+        code: "GR",
+        cities: ["Athens", "Thessaloniki", "Patras", "Heraklion", "Larissa", "Volos", "Rhodes", "Chania", "Santorini", "Corfu"]
+      },
+      {
+        name: "Thailand",
+        code: "TH",
+        cities: ["Bangkok", "Chiang Mai", "Phuket", "Pattaya", "Hua Hin", "Koh Samui", "Krabi", "Ayutthaya", "Phi Phi Islands", "Kanchanaburi"]
+      }
+    ];
+
+    countries.forEach(country => {
+      this.countries.set(country.code, country);
+    });
+
     // Sample destinations
     const barcelona = this.createDestination({
       name: "Barcelona",

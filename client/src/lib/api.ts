@@ -6,8 +6,20 @@ import {
   Trip, 
   TripDetail, 
   BudgetAllocation,
-  TripSearchParams
+  TripSearchParams,
+  Country
 } from "@shared/schema";
+
+// Countries and Cities APIs
+export const getCountries = async (): Promise<Country[]> => {
+  const response = await apiRequest("GET", "/api/countries");
+  return response.json();
+};
+
+export const getCountryByCode = async (code: string): Promise<Country> => {
+  const response = await apiRequest("GET", `/api/countries/${code}`);
+  return response.json();
+};
 
 // Destinations APIs
 export const getDestinations = async (): Promise<Destination[]> => {
