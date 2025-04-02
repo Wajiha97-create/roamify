@@ -74,7 +74,7 @@ interface DaySummary {
 const generateWeather = (day: number): DailyWeather => {
   const weatherType = ["sunny", "partly-cloudy", "cloudy", "rainy", "stormy"] as const;
   const randomCondition = weatherType[Math.floor(Math.random() * 3)]; // Mostly good weather
-  
+
   return {
     condition: randomCondition,
     highTemp: Math.floor(Math.random() * 10) + 22, // 22-32 degrees
@@ -93,9 +93,9 @@ const generateDaySummary = (day: number, destinationName: string = "Barcelona"):
     day % 4 === 0 ? "Hidden gem discovery" : day % 4 === 1 ? "Local market visit" : day % 4 === 2 ? "Architectural masterpieces" : "Cultural immersion",
     day % 2 === 0 ? "Scenic views and photo spots" : "Relaxation and leisure time"
   ];
-  
+
   let title, description;
-  
+
   if (day === 1) {
     title = `Welcome to ${destinationName}`;
     description = `Arrive and get settled in ${destinationName}. This first day is designed to help you acclimate to the city and its rhythm.`;
@@ -112,7 +112,7 @@ const generateDaySummary = (day: number, destinationName: string = "Barcelona"):
     title = `Farewell to ${destinationName}`;
     description = `Make the most of your final day in ${destinationName} with some last-minute sightseeing and souvenir shopping before departure.`;
   }
-  
+
   const budgetTips = [
     "Look for menu del día (fixed-price lunch menus) for great value meals",
     "Use public transportation instead of taxis to save money",
@@ -120,7 +120,7 @@ const generateDaySummary = (day: number, destinationName: string = "Barcelona"):
     "Stay hydrated with tap water instead of buying bottled water",
     "Consider city passes if you plan to visit multiple attractions"
   ];
-  
+
   const culturalTips = [
     "Greet locals with 'Hola' (Hello) or 'Buenos días' (Good morning)",
     "Tipping is appreciated but not obligatory (5-10% is sufficient)",
@@ -128,11 +128,11 @@ const generateDaySummary = (day: number, destinationName: string = "Barcelona"):
     "Businesses often close for siesta between 2pm and 5pm",
     "Dress appropriately when visiting religious sites (cover shoulders and knees)"
   ];
-  
+
   // Select 2 random tips from each array for variety
   const shuffledBudgetTips = [...budgetTips].sort(() => 0.5 - Math.random()).slice(0, 2);
   const shuffledCulturalTips = [...culturalTips].sort(() => 0.5 - Math.random()).slice(0, 2);
-  
+
   return {
     day,
     title,
@@ -212,7 +212,7 @@ const generateDayActivities = (day: number, destinationName: string = "Barcelona
       ]
     }
   ];
-  
+
   // Morning activity
   if (day === 1) {
     activities.push({
@@ -310,7 +310,7 @@ const generateDayActivities = (day: number, destinationName: string = "Barcelona
       ]
     });
   }
-  
+
   // Lunch
   activities.push({
     id: day * 100 + 3,
@@ -335,7 +335,7 @@ const generateDayActivities = (day: number, destinationName: string = "Barcelona
       }
     ]
   });
-  
+
   // Afternoon activity
   if (day === 1) {
     activities.push({
@@ -433,7 +433,7 @@ const generateDayActivities = (day: number, destinationName: string = "Barcelona
       ]
     });
   }
-  
+
   // Free time / Rest
   activities.push({
     id: day * 100 + 5,
@@ -453,7 +453,7 @@ const generateDayActivities = (day: number, destinationName: string = "Barcelona
       }
     ]
   });
-  
+
   // Dinner
   activities.push({
     id: day * 100 + 6,
@@ -490,7 +490,7 @@ const generateDayActivities = (day: number, destinationName: string = "Barcelona
       }
     ]
   });
-  
+
   // Evening activity
   if (day === 1 || day === 4) {
     activities.push({
@@ -550,7 +550,7 @@ const generateDayActivities = (day: number, destinationName: string = "Barcelona
       ]
     });
   }
-  
+
   return activities;
 };
 
@@ -570,7 +570,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
   const [selectedDay, setSelectedDay] = useState(1);
   const [showMap, setShowMap] = useState(false);
   const [selectedView, setSelectedView] = useState<"timeline" | "details" | "tips">("timeline");
-  
+
   // Fetch trip details
   const { 
     data: tripDetails, 
@@ -580,7 +580,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
     queryKey: [`/api/trips/${tripId}/details`],
     enabled: !!tripId,
   });
-  
+
   // Fetch trip data to get duration
   const { 
     data: tripData, 
@@ -589,35 +589,35 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
     queryKey: [`/api/trips/${tripId}`],
     enabled: !!tripId,
   });
-  
+
   // Get trip data and trip details with loading state
   const isLoading = isLoadingTripDetails || isLoadingTripData;
-  
+
   // Get the number of days in the trip
   const tripDuration = tripData && typeof tripData === 'object' && 'duration' in tripData 
     ? (tripData.duration as number) 
     : 5;
-  
+
   // Get an array of day numbers (1 to number of days)
   const dayNumbers: number[] = Array.from({ length: tripDuration as number }, (_, i) => i + 1);
-  
+
   // Get details for the selected day from fetched data, or fallback to generated
   const selectedDayDetail = tripDetails?.find(detail => detail.day === selectedDay);
-  
+
   // Parse activities from the trip detail or fall back to generated data
   const dayActivities = selectedDayDetail?.activities as Activity[] || generateDayActivities(selectedDay, destinationName);
-  
+
   // Get day summary (either from API or generate)
   const daySummary = generateDaySummary(selectedDay, destinationName);
-  
+
   // For currency conversion
   const { selectedCurrency } = useCurrency();
-  
+
   // Calculate daily cost
   const dailyCost = dayActivities.reduce((sum, activity) => sum + activity.cost, 0);
   const convertedDailyCost = convertCurrency(dailyCost, selectedCurrency.code);
   const formattedDailyCost = formatCurrencyByCode(convertedDailyCost, selectedCurrency.code);
-  
+
   // Get icon based on activity type
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -638,7 +638,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
         return <Clock className="h-4 w-4 text-gray-500" />;
     }
   };
-  
+
   // Get time of day icon
   const getTimeOfDayIcon = (time: string) => {
     const hour = parseInt(time.split(':')[0]);
@@ -656,20 +656,20 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
   // Get weather description
   const getWeatherDescription = (weather: DailyWeather) => {
     const { condition, highTemp, lowTemp, precipitation, windSpeed } = weather;
-    
+
     let description = `Expect ${condition.replace('-', ' ')} conditions `;
     description += `with temperatures between ${lowTemp}°C and ${highTemp}°C. `;
-    
+
     if (precipitation > 0) {
       description += `There's a chance of rain with ${precipitation}% precipitation. `;
     }
-    
+
     if (windSpeed > 15) {
       description += `Be prepared for somewhat windy conditions.`;
     } else {
       description += `Wind should be mild.`;
     }
-    
+
     return description;
   };
 
@@ -691,7 +691,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
           complete with activities, recommendations, and local tips.
         </p>
       </div>
-      
+
       <Card className="overflow-hidden shadow-lg border-primary/10">
         <CardContent className="p-6">
           <Tabs 
@@ -718,7 +718,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                 </Button>
               </div>
             </div>
-            
+
             <div className="border-b mb-6">
               <TabsList className="flex justify-start mb-0 w-full overflow-x-auto hide-scrollbar">
                 {dayNumbers.map(day => (
@@ -735,7 +735,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                 ))}
               </TabsList>
             </div>
-            
+
             <div className="mb-6">
               <div className="flex border-b">
                 <button 
@@ -776,19 +776,19 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                 </button>
               </div>
             </div>
-            
+
             {dayNumbers.map(day => (
               <TabsContent key={day} value={day.toString()} className="space-y-6">
                 {selectedView === "timeline" && (
                   <div className="relative">
                     {/* Timeline */}
                     <div className="absolute top-0 bottom-0 left-16 w-px bg-neutral-200"></div>
-                    
+
                     <div className="space-y-8">
                       {dayActivities.map((activity) => {
                         const activityCost = convertCurrency(activity.cost, selectedCurrency.code);
                         const formattedCost = formatCurrencyByCode(activityCost, selectedCurrency.code);
-                        
+
                         return (
                           <div key={activity.id} className="relative pl-24">
                             {/* Time indicator */}
@@ -798,7 +798,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                                 {getTimeOfDayIcon(activity.time)}
                               </div>
                             </div>
-                            
+
                             {/* Activity card */}
                             <Card>
                               <CardContent className="p-4">
@@ -833,7 +833,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                                     {activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}
                                   </Badge>
                                 </div>
-                                
+
                                 {(activity.tips || activity.alternativeOptions) && (
                                   <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
                                     <Accordion type="single" collapsible className="w-full">
@@ -855,7 +855,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                                           </AccordionContent>
                                         </AccordionItem>
                                       )}
-                                      
+
                                       {activity.alternativeOptions && activity.alternativeOptions.length > 0 && (
                                         <AccordionItem value="alternatives" className="border-b-0">
                                           <AccordionTrigger className="text-sm text-primary py-2 hover:no-underline">
@@ -867,7 +867,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                                               {activity.alternativeOptions.map((option, index) => {
                                                 const optionCost = convertCurrency(option.cost, selectedCurrency.code);
                                                 const formattedOptionCost = formatCurrencyByCode(optionCost, selectedCurrency.code);
-                                                
+
                                                 return (
                                                   <div key={index} className="bg-gray-50 p-3 rounded-md">
                                                     <div className="flex justify-between items-start">
@@ -893,7 +893,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                     </div>
                   </div>
                 )}
-                
+
                 {selectedView === "details" && (
                   <div className="space-y-6">
                     <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-6">
@@ -902,10 +902,10 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                           <h3 className="text-xl font-semibold mb-2">{generateDaySummary(day as number, destinationName).title}</h3>
                           <p className="text-gray-600">{generateDaySummary(day as number, destinationName).description}</p>
                         </div>
-                        
+
                         <div className="bg-white rounded-md p-3 shadow-sm flex items-center space-x-4 min-w-[200px]">
                           <div className="p-2 bg-gray-100 rounded-full">
-                            {(weatherIcons[daySummary.weather.condition] || Sunrise)({
+                            {React.createElement(weatherIcons[daySummary.weather.condition] || Sunrise, {
                               className: "h-6 w-6 text-primary"
                             })}
                           </div>
@@ -919,7 +919,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="mt-4 flex flex-wrap gap-2">
                         {daySummary.highlights.map((highlight, index) => (
                           <Badge key={index} variant="outline" className="bg-white">
@@ -928,7 +928,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                         ))}
                       </div>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-2 gap-4">
                       <Card>
                         <CardContent className="p-4">
@@ -964,7 +964,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                           </div>
                         </CardContent>
                       </Card>
-                      
+
                       <Card>
                         <CardContent className="p-4">
                           <h4 className="font-medium flex items-center mb-3">
@@ -1020,7 +1020,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                               <span>{formattedDailyCost}</span>
                             </div>
                           </div>
-                          
+
                           <div className="bg-gray-50 p-3 rounded-md mt-4">
                             <h5 className="text-sm font-medium mb-1">Money-Saving Tip:</h5>
                             <p className="text-xs text-gray-600">
@@ -1032,7 +1032,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                     </div>
                   </div>
                 )}
-                
+
                 {selectedView === "tips" && (
                   <div className="space-y-6">
                     <Card>
@@ -1041,7 +1041,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                           <Navigation className="h-5 w-5 mr-2 text-primary" />
                           Essential Travel Tips
                         </h4>
-                        
+
                         <div className="grid md:grid-cols-2 gap-6">
                           <div>
                             <h5 className="font-medium text-md mb-3 flex items-center">
@@ -1060,7 +1060,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                                 <span className="text-sm">Always carry some cash for small vendors that might not accept cards</span>
                               </li>
                             </ul>
-                            
+
                             <h5 className="font-medium text-md mt-6 mb-3 flex items-center">
                               <Umbrella className="h-4 w-4 mr-2 text-blue-500" />
                               Safety & Health
@@ -1080,7 +1080,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                               </li>
                             </ul>
                           </div>
-                          
+
                           <div>
                             <h5 className="font-medium text-md mb-3 flex items-center">
                               <Heart className="h-4 w-4 mr-2 text-red-500" />
@@ -1098,7 +1098,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                                 <span className="text-sm">Learn a few basic phrases in the local language - it's appreciated</span>
                               </li>
                             </ul>
-                            
+
                             <h5 className="font-medium text-md mt-6 mb-3 flex items-center">
                               <Camera className="h-4 w-4 mr-2 text-purple-500" />
                               Photography & Souvenirs
@@ -1119,7 +1119,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                             </ul>
                           </div>
                         </div>
-                        
+
                         <div className="mt-6 bg-primary/10 rounded-lg p-4">
                           <h5 className="font-medium mb-2 flex items-center">
                             <AlertCircle className="h-4 w-4 mr-2 text-primary" />
@@ -1139,7 +1139,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
                         </div>
                       </CardContent>
                     </Card>
-                    
+
                     <Card>
                       <CardContent className="p-6">
                         <h4 className="font-medium mb-3">Common Phrases in Local Language</h4>
@@ -1177,7 +1177,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
             ))}
           </Tabs>
         </CardContent>
-        
+
         {showMap && (
           <div className="border-t">
             <div className="h-96 bg-neutral-100 flex items-center justify-center text-neutral-500 relative">
@@ -1201,7 +1201,7 @@ const TripItinerary = ({ tripId, destinationName = "Barcelona" }: TripItineraryP
           </div>
         )}
       </Card>
-      
+
       <div className="bg-neutral-50 rounded-lg p-6 shadow-sm border border-neutral-100">
         <div className="flex items-start md:items-center justify-between flex-col md:flex-row gap-4">
           <div>
