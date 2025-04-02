@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Destination, TourGuide } from "@shared/schema";
 import { getTourGuides } from "@/lib/api";
