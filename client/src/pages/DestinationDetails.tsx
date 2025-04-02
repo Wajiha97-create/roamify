@@ -331,7 +331,7 @@ const DestinationDetails = () => {
       </section>
 
       {/* Trip Itinerary */}
-      {tripId && <TripItinerary tripId={tripId} />}
+      {tripId && <TripItinerary tripId={tripId} destinationName={destination.name} />}
     </div>
   );
 };
