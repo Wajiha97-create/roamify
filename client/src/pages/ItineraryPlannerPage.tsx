@@ -616,7 +616,7 @@ export default function ItineraryPlannerPage() {
                           }
 
                           const trip = await response.json();
-                          window.location.href = `/trip/${trip.id}`;
+                          window.location.href = `/trips/${trip.id}`;
                         } catch (error) {
                           console.error('Error generating itinerary:', error);
                           alert('Failed to generate itinerary. Please try again.');
