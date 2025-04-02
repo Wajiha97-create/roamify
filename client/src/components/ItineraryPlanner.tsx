@@ -128,37 +128,38 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                  {destinations?.map(destination => (
-                    <Card 
-                      key={destination.id} 
-                      className={`cursor-pointer transition-all ${selectedDestinationId === destination.id ? 'ring-2 ring-primary' : 'hover:shadow-md'}`}
-                      onClick={() => setSelectedDestinationId(destination.id)}
-                    >
-                      <div className="h-36 overflow-hidden">
-                        <img 
-                          src={destination.imageUrl} 
-                          alt={destination.name} 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <CardContent className="p-4">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-semibold">{destination.name}</h4>
-                            <p className="text-sm text-neutral-500">{destination.country}</p>
-                          </div>
-                          <RadioGroupItem 
-                            value={destination.id.toString()} 
-                            id={`destination-${destination.id}`} 
-                            checked={selectedDestinationId === destination.id}
-                            className="mt-1"
+                <RadioGroup value={selectedDestinationId?.toString() || ""} onValueChange={(val) => setSelectedDestinationId(Number(val))}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                    {destinations?.map(destination => (
+                      <Card 
+                        key={destination.id} 
+                        className={`cursor-pointer transition-all ${selectedDestinationId === destination.id ? 'ring-2 ring-primary' : 'hover:shadow-md'}`}
+                        onClick={() => setSelectedDestinationId(destination.id)}
+                      >
+                        <div className="h-36 overflow-hidden">
+                          <img 
+                            src={destination.imageUrl} 
+                            alt={destination.name} 
+                            className="w-full h-full object-cover"
                           />
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-semibold">{destination.name}</h4>
+                              <p className="text-sm text-neutral-500">{destination.country}</p>
+                            </div>
+                            <RadioGroupItem 
+                              value={destination.id.toString()} 
+                              id={`destination-${destination.id}`}
+                              className="mt-1"
+                            />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </RadioGroup>
               )}
             </div>
             
