@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Trip, TripDetail, Destination, Hotel, BudgetAllocation } from "@shared/schema";
-import { Plane, Hotel as HotelIcon, Map, Plane as PlaneDeparture, Info, Lightbulb, Utensils, Globe as Languages, Ticket } from "lucide-react";
+import { Plane, Hotel as HotelIcon, Map, InfoIcon, Lightbulb, Utensils, Globe as Languages, Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
@@ -46,22 +46,12 @@ const TripItinerary = ({ tripId }: TripItineraryProps) => {
   }
   
   // Format dates 
-  const startDate = trip.startDate instanceof Date 
-    ? format(trip.startDate, "MMM d, yyyy") 
-    : format(new Date(trip.startDate), "MMM d, yyyy");
-  
-  const endDate = trip.endDate instanceof Date 
-    ? format(trip.endDate, "MMM d, yyyy") 
-    : format(new Date(trip.endDate), "MMM d, yyyy");
+  const startDate = format(new Date(trip.startDate), "MMM d, yyyy");
+  const endDate = format(new Date(trip.endDate), "MMM d, yyyy");
   
   // Calculate duration
-  const startDateObj = trip.startDate instanceof Date 
-    ? trip.startDate 
-    : new Date(trip.startDate);
-  
-  const endDateObj = trip.endDate instanceof Date 
-    ? trip.endDate 
-    : new Date(trip.endDate);
+  const startDateObj = new Date(trip.startDate);
+  const endDateObj = new Date(trip.endDate);
     
   const tripDuration = Math.ceil((endDateObj.getTime() - startDateObj.getTime()) / (1000 * 60 * 60 * 24));
   
@@ -88,7 +78,7 @@ const TripItinerary = ({ tripId }: TripItineraryProps) => {
             <div className="space-y-4">
               <div className="flex items-start">
                 <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-1">
-                  <PlaneDeparture className="text-primary" />
+                  <Plane className="text-primary" />
                 </div>
                 <div className="ml-4">
                   <p className="font-medium">Departure</p>
@@ -156,7 +146,7 @@ const TripItinerary = ({ tripId }: TripItineraryProps) => {
                   </div>
                   <h4 className="font-medium">Day {detail.day}: {detail.title}</h4>
                   <ul className="mt-2 space-y-2 text-sm text-neutral-700">
-                    {detail.activities.map((activity: any, actIndex: number) => (
+                    {Array.isArray(detail.activities) && detail.activities.map((activity: {time: string, description: string}, actIndex: number) => (
                       <li key={actIndex} className="flex items-start">
                         <span className="text-neutral-400 w-16 flex-shrink-0">{activity.time}</span>
                         <span>{activity.description}</span>
@@ -192,7 +182,7 @@ const TripItinerary = ({ tripId }: TripItineraryProps) => {
             <div className="space-y-4">
               <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                 <h4 className="font-medium flex items-center">
-                  <LightBulb className="text-yellow-500 mr-2 h-4 w-4" />
+                  <Lightbulb className="text-yellow-500 mr-2 h-4 w-4" />
                   Local Transport
                 </h4>
                 <p className="text-sm mt-1">Consider getting a T-10 ticket (€11.35) for 10 rides on public transport. It can be shared between travelers and is more economical than single tickets.</p>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import { 
   Form,
   FormControl,
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  PlaneDeparture, 
+  Plane, 
   Umbrella, 
   Mountain, 
   Building
@@ -40,7 +40,7 @@ type FormValues = z.infer<typeof formSchema>;
 const BudgetInput = () => {
   const [selectedType, setSelectedType] = useState<string>("city");
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -65,7 +65,7 @@ const BudgetInput = () => {
       
       if (destinations && destinations.length > 0) {
         // Navigate to the first destination
-        navigate(`/destinations/${destinations[0].id}`);
+        setLocation(`/destinations/${destinations[0].id}`);
       } else {
         toast({
           title: "No destinations found",
@@ -209,7 +209,7 @@ const BudgetInput = () => {
             type="submit" 
             className="w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center"
           >
-            <PlaneDeparture className="mr-2 h-5 w-5" /> Find My Perfect Trip
+            <Plane className="mr-2 h-5 w-5" /> Find My Perfect Trip
           </Button>
         </form>
       </Form>

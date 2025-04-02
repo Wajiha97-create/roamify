@@ -162,7 +162,12 @@ export class MemStorage implements IStorage {
   
   async createHotel(hotel: InsertHotel): Promise<Hotel> {
     const id = this.hotelIdCounter++;
-    const newHotel: Hotel = { ...hotel, id };
+    const newHotel: Hotel = { 
+      ...hotel, 
+      id,
+      label: hotel.label || null,
+      discountInfo: hotel.discountInfo || null
+    };
     this.hotels.set(id, newHotel);
     return newHotel;
   }
@@ -179,7 +184,11 @@ export class MemStorage implements IStorage {
   
   async createAttraction(attraction: InsertAttraction): Promise<Attraction> {
     const id = this.attractionIdCounter++;
-    const newAttraction: Attraction = { ...attraction, id };
+    const newAttraction: Attraction = { 
+      ...attraction, 
+      id,
+      label: attraction.label || null
+    };
     this.attractions.set(id, newAttraction);
     return newAttraction;
   }
@@ -200,7 +209,15 @@ export class MemStorage implements IStorage {
   async createTrip(trip: InsertTrip): Promise<Trip> {
     const id = this.tripIdCounter++;
     const createdAt = new Date();
-    const newTrip: Trip = { ...trip, id, createdAt };
+    const newTrip: Trip = { 
+      ...trip, 
+      id, 
+      createdAt: createdAt,
+      travelers: trip.travelers || 1,
+      userId: trip.userId || null,
+      hotelId: trip.hotelId || null,
+      totalCost: trip.totalCost || null
+    };
     this.trips.set(id, newTrip);
     return newTrip;
   }
@@ -438,8 +455,8 @@ export class MemStorage implements IStorage {
     const trip = this.createTrip({
       userId: null,
       destinationId: 1, // Barcelona
-      startDate: new Date("2023-06-15"),
-      endDate: new Date("2023-06-22"),
+      startDate: "2023-06-15",
+      endDate: "2023-06-22",
       budget: 2000,
       travelers: 2,
       tripType: "City",

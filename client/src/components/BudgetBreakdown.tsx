@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { BudgetAllocation } from "@shared/schema";
-import { Lightbulb, InfoCircle } from "lucide-react";
+import { Lightbulb, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -149,7 +149,7 @@ const BudgetBreakdown = ({
               </div>
               
               <div className="flex items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <InfoCircle className="text-primary text-xl mr-4" />
+                <Info className="text-primary text-xl mr-4" />
                 <p className="text-neutral-700">We've optimized your budget based on {duration} days in {destinationName} for {travelers} travelers.</p>
               </div>
             </div>
