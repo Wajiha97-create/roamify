@@ -123,6 +123,58 @@ export const insertBudgetAllocationSchema = createInsertSchema(budgetAllocations
   id: true,
 });
 
+// Tour Guide table
+export const tourGuides = pgTable("tour_guides", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  location: text("location").notNull(),
+  bio: text("bio").notNull(),
+  imageUrl: text("image_url").notNull(),
+  rating: real("rating").notNull(),
+  reviewCount: integer("review_count").notNull(),
+  specialties: text("specialties").array().notNull(),
+  languages: text("languages").array().notNull(),
+  pricePerDay: integer("price_per_day").notNull(),
+  yearsExperience: integer("years_experience").notNull(),
+  toursCompleted: integer("tours_completed").notNull(),
+  certifications: text("certifications").array().notNull(),
+  contactEmail: text("contact_email").notNull(),
+  contactPhone: text("contact_phone").notNull(),
+});
+
+export const insertTourGuideSchema = createInsertSchema(tourGuides).omit({
+  id: true,
+});
+
+// Tour Guide Reviews table
+export const tourGuideReviews = pgTable("tour_guide_reviews", {
+  id: serial("id").primaryKey(),
+  tourGuideId: integer("tour_guide_id").notNull(),
+  reviewerName: text("reviewer_name").notNull(),
+  reviewerImage: text("reviewer_image").notNull(),
+  rating: real("rating").notNull(),
+  comment: text("comment").notNull(),
+  date: date("date").notNull(),
+  tourLocation: text("tour_location").notNull(),
+});
+
+export const insertTourGuideReviewSchema = createInsertSchema(tourGuideReviews).omit({
+  id: true,
+});
+
+// Tour Guide Photos table
+export const tourGuidePhotos = pgTable("tour_guide_photos", {
+  id: serial("id").primaryKey(),
+  tourGuideId: integer("tour_guide_id").notNull(),
+  imageUrl: text("image_url").notNull(),
+  location: text("location").notNull(),
+  date: date("date").notNull(),
+});
+
+export const insertTourGuidePhotoSchema = createInsertSchema(tourGuidePhotos).omit({
+  id: true,
+});
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -144,6 +196,15 @@ export type InsertTripDetail = z.infer<typeof insertTripDetailSchema>;
 
 export type BudgetAllocation = typeof budgetAllocations.$inferSelect;
 export type InsertBudgetAllocation = z.infer<typeof insertBudgetAllocationSchema>;
+
+export type TourGuide = typeof tourGuides.$inferSelect;
+export type InsertTourGuide = z.infer<typeof insertTourGuideSchema>;
+
+export type TourGuideReview = typeof tourGuideReviews.$inferSelect;
+export type InsertTourGuideReview = z.infer<typeof insertTourGuideReviewSchema>;
+
+export type TourGuidePhoto = typeof tourGuidePhotos.$inferSelect;
+export type InsertTourGuidePhoto = z.infer<typeof insertTourGuidePhotoSchema>;
 
 // Country and city-related schemas
 export const countrySchema = z.object({

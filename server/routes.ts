@@ -304,6 +304,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to update budget allocation" });
     }
   });
+  
+  // Tour guides endpoints
+  app.get("/api/tour-guides", async (req, res) => {
+    try {
+      const tourGuides = await storage.getTourGuides();
+      res.json(tourGuides);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch tour guides" });
+    }
+  });
+  
+  app.get("/api/tour-guides/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid tour guide ID" });
+      }
+      
+      const tourGuide = await storage.getTourGuide(id);
+      if (!tourGuide) {
+        return res.status(404).json({ message: "Tour guide not found" });
+      }
+      
+      res.json(tourGuide);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch tour guide" });
+    }
+  });
+  
+  app.post("/api/tour-guides", async (req, res) => {
+    try {
+      const tourGuide = req.body;
+      const newTourGuide = await storage.createTourGuide(tourGuide);
+      res.status(201).json(newTourGuide);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create tour guide" });
+    }
+  });
+  
+  // Tour guide reviews endpoints
+  app.get("/api/tour-guides/:id/reviews", async (req, res) => {
+    try {
+      const tourGuideId = parseInt(req.params.id);
+      if (isNaN(tourGuideId)) {
+        return res.status(400).json({ message: "Invalid tour guide ID" });
+      }
+      
+      const reviews = await storage.getTourGuideReviews(tourGuideId);
+      res.json(reviews);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch tour guide reviews" });
+    }
+  });
+  
+  app.post("/api/tour-guides/:id/reviews", async (req, res) => {
+    try {
+      const tourGuideId = parseInt(req.params.id);
+      if (isNaN(tourGuideId)) {
+        return res.status(400).json({ message: "Invalid tour guide ID" });
+      }
+      
+      const review = { ...req.body, tourGuideId };
+      const newReview = await storage.createTourGuideReview(review);
+      res.status(201).json(newReview);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create tour guide review" });
+    }
+  });
+  
+  // Tour guide photos endpoints
+  app.get("/api/tour-guides/:id/photos", async (req, res) => {
+    try {
+      const tourGuideId = parseInt(req.params.id);
+      if (isNaN(tourGuideId)) {
+        return res.status(400).json({ message: "Invalid tour guide ID" });
+      }
+      
+      const photos = await storage.getTourGuidePhotos(tourGuideId);
+      res.json(photos);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch tour guide photos" });
+    }
+  });
+  
+  app.post("/api/tour-guides/:id/photos", async (req, res) => {
+    try {
+      const tourGuideId = parseInt(req.params.id);
+      if (isNaN(tourGuideId)) {
+        return res.status(400).json({ message: "Invalid tour guide ID" });
+      }
+      
+      const photo = { ...req.body, tourGuideId };
+      const newPhoto = await storage.createTourGuidePhoto(photo);
+      res.status(201).json(newPhoto);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create tour guide photo" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

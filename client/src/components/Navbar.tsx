@@ -31,6 +31,9 @@ const Navbar = () => {
             <Link href="/attractions" className="text-neutral-600 hover:text-primary font-medium">
               Attractions
             </Link>
+            <Link href="/agents" className="text-neutral-600 hover:text-primary font-medium">
+              Tour Guides
+            </Link>
             <Link href="/plan" className="text-neutral-600 hover:text-primary font-medium">
               Plan Trip
             </Link>
@@ -75,6 +78,9 @@ const Navbar = () => {
           </Link>
           <Link href="/attractions" className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">
             Attractions
+          </Link>
+          <Link href="/agents" className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">
+            Tour Guides
           </Link>
           <Link href="/plan" className="block px-3 py-2 rounded-md text-base font-medium text-neutral-700 hover:text-primary hover:bg-neutral-50">
             Plan Trip

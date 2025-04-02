@@ -40,6 +40,7 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
     from: new Date(),
     to: undefined,
   });
+  const [tourGuideRequested, setTourGuideRequested] = useState(false);
   const [generatedTripId, setGeneratedTripId] = useState<number | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -83,15 +84,38 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
   const generateItinerary = async () => {
     setIsGenerating(true);
     
-    // In a real app, we would call the API to create a trip
-    // For now, we'll simulate the API call with a timeout
-    setTimeout(() => {
-      // Set a mock trip ID - in a real app this would come from the API
-      const mockTripId = Math.floor(Math.random() * 1000) + 1;
-      setGeneratedTripId(mockTripId);
-      setIsGenerating(false);
+    try {
+      // Create a trip in the database
+      const response = await fetch('/api/trips', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          destinationId: selectedDestinationId,
+          startDate: dateRange.from.toISOString(),
+          endDate: dateRange.to?.toISOString(),
+          duration: tripDuration,
+          budget: budget,
+          preferences: preferences,
+          travelers: travelers,
+          tourGuideRequested: tourGuideRequested,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create trip');
+      }
+      
+      const trip = await response.json();
+      setGeneratedTripId(trip.id);
       setStep(4);
-    }, 1500);
+    } catch (error) {
+      console.error('Error creating trip:', error);
+      // Handle error appropriately
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   // Currency conversion for budget display
@@ -309,6 +333,17 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
                     </Popover>
                   </div>
                 </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="tour-guide" 
+                    checked={tourGuideRequested}
+                    onCheckedChange={(checked) => setTourGuideRequested(checked === true)}
+                  />
+                  <Label htmlFor="tour-guide" className="cursor-pointer">
+                    Request a local tour guide for personalized experiences
+                  </Label>
+                </div>
               </div>
             </div>
             
@@ -384,6 +419,13 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
                           ))}
                         </div>
                       </div>
+                      {tourGuideRequested && (
+                        <div className="flex items-center gap-2 mt-2">
+                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                            Tour Guide Requested
+                          </Badge>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -524,6 +566,7 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
                     {dateRange.from && dateRange.to && (
                       <>
                         {format(dateRange.from, "MMMM d")} - {format(dateRange.to, "MMMM d, yyyy")} • {tripDuration} days • {travelers} {travelers === 1 ? 'traveler' : 'travelers'}
+                        {tourGuideRequested && <> • <span className="text-green-600 font-medium">Tour Guide Included</span></>}
                       </>
                     )}
                   </CardDescription>
@@ -539,6 +582,54 @@ const ItineraryPlanner = ({ initialDestinationId }: ItineraryPlannerProps) => {
                   )}
                 </CardContent>
               </Card>
+              
+              {tourGuideRequested && (
+                <div className="mt-6">
+                  <h4 className="text-lg font-semibold mb-4">Your Tour Guide Information</h4>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row gap-6">
+                        <div className="flex-shrink-0">
+                          <div className="w-32 h-32 rounded-full overflow-hidden bg-neutral-100">
+                            <img 
+                              src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200&h=200&auto=format&fit=crop"
+                              alt="Your Tour Guide" 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-medium">Maria Rodriguez</h3>
+                          <p className="text-sm text-primary font-medium">Local Expert in {selectedDestination?.name}</p>
+                          <div className="flex items-center mt-1">
+                            <div className="flex">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <svg key={star} xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                              ))}
+                            </div>
+                            <span className="text-sm text-neutral-600 ml-1">5.0 (124 reviews)</span>
+                          </div>
+                          <p className="mt-3 text-neutral-700">
+                            Maria has been a local guide in {selectedDestination?.name} for over 10 years, specializing in cultural and historical tours. She speaks English, Spanish, and French fluently.
+                          </p>
+                          <div className="mt-4">
+                            <h5 className="text-sm font-medium mb-2">Areas of Expertise:</h5>
+                            <div className="flex flex-wrap gap-2">
+                              {preferences.map((pref) => (
+                                <Badge key={pref} variant="secondary">{pref}</Badge>
+                              ))}
+                              <Badge variant="secondary">Local Cuisine</Badge>
+                              <Badge variant="secondary">Hidden Gems</Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
               
               <div className="mt-6">
                 <h4 className="text-lg font-semibold mb-4">Travel Tips for {selectedDestination?.name}</h4>

@@ -7,7 +7,10 @@ import {
   TripDetail, 
   BudgetAllocation,
   TripSearchParams,
-  Country
+  Country,
+  TourGuide,
+  TourGuideReview,
+  TourGuidePhoto
 } from "@shared/schema";
 
 // Countries and Cities APIs
@@ -104,5 +107,43 @@ export const getBudgetAllocation = async (tripId: number): Promise<BudgetAllocat
 
 export const updateBudgetAllocation = async (tripId: number, budget: any): Promise<BudgetAllocation> => {
   const response = await apiRequest("PUT", `/api/trips/${tripId}/budget`, budget);
+  return response.json();
+};
+
+// Tour Guide APIs
+export const getTourGuides = async (): Promise<TourGuide[]> => {
+  const response = await apiRequest("GET", "/api/tour-guides");
+  return response.json();
+};
+
+export const getTourGuide = async (id: number): Promise<TourGuide> => {
+  const response = await apiRequest("GET", `/api/tour-guides/${id}`);
+  return response.json();
+};
+
+export const createTourGuide = async (tourGuide: any): Promise<TourGuide> => {
+  const response = await apiRequest("POST", "/api/tour-guides", tourGuide);
+  return response.json();
+};
+
+// Tour Guide Reviews APIs
+export const getTourGuideReviews = async (tourGuideId: number): Promise<TourGuideReview[]> => {
+  const response = await apiRequest("GET", `/api/tour-guides/${tourGuideId}/reviews`);
+  return response.json();
+};
+
+export const createTourGuideReview = async (tourGuideId: number, review: any): Promise<TourGuideReview> => {
+  const response = await apiRequest("POST", `/api/tour-guides/${tourGuideId}/reviews`, review);
+  return response.json();
+};
+
+// Tour Guide Photos APIs
+export const getTourGuidePhotos = async (tourGuideId: number): Promise<TourGuidePhoto[]> => {
+  const response = await apiRequest("GET", `/api/tour-guides/${tourGuideId}/photos`);
+  return response.json();
+};
+
+export const createTourGuidePhoto = async (tourGuideId: number, photo: any): Promise<TourGuidePhoto> => {
+  const response = await apiRequest("POST", `/api/tour-guides/${tourGuideId}/photos`, photo);
   return response.json();
 };

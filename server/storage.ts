@@ -6,6 +6,9 @@ import {
   Trip, InsertTrip,
   TripDetail, InsertTripDetail,
   BudgetAllocation, InsertBudgetAllocation,
+  TourGuide, InsertTourGuide,
+  TourGuideReview, InsertTourGuideReview,
+  TourGuidePhoto, InsertTourGuidePhoto,
   TripSearchParams,
   Country
 } from "@shared/schema";
@@ -52,6 +55,19 @@ export interface IStorage {
   getBudgetAllocation(tripId: number): Promise<BudgetAllocation | undefined>;
   createBudgetAllocation(allocation: InsertBudgetAllocation): Promise<BudgetAllocation>;
   updateBudgetAllocation(tripId: number, allocation: Partial<InsertBudgetAllocation>): Promise<BudgetAllocation | undefined>;
+  
+  // Tour guide methods
+  getTourGuides(): Promise<TourGuide[]>;
+  getTourGuide(id: number): Promise<TourGuide | undefined>;
+  createTourGuide(tourGuide: InsertTourGuide): Promise<TourGuide>;
+  
+  // Tour guide reviews methods
+  getTourGuideReviews(tourGuideId: number): Promise<TourGuideReview[]>;
+  createTourGuideReview(review: InsertTourGuideReview): Promise<TourGuideReview>;
+  
+  // Tour guide photos methods
+  getTourGuidePhotos(tourGuideId: number): Promise<TourGuidePhoto[]>;
+  createTourGuidePhoto(photo: InsertTourGuidePhoto): Promise<TourGuidePhoto>;
 }
 
 // Implementation of the storage interface using in-memory data
@@ -64,6 +80,9 @@ export class MemStorage implements IStorage {
   private tripDetails: Map<number, TripDetail>;
   private budgetAllocations: Map<number, BudgetAllocation>;
   private countries: Map<string, Country>;
+  private tourGuides: Map<number, TourGuide>;
+  private tourGuideReviews: Map<number, TourGuideReview>;
+  private tourGuidePhotos: Map<number, TourGuidePhoto>;
   
   private userIdCounter: number;
   private destinationIdCounter: number;
@@ -72,6 +91,9 @@ export class MemStorage implements IStorage {
   private tripIdCounter: number;
   private tripDetailIdCounter: number;
   private budgetAllocationIdCounter: number;
+  private tourGuideIdCounter: number;
+  private tourGuideReviewIdCounter: number;
+  private tourGuidePhotoIdCounter: number;
   
   constructor() {
     this.users = new Map();
@@ -82,6 +104,9 @@ export class MemStorage implements IStorage {
     this.tripDetails = new Map();
     this.budgetAllocations = new Map();
     this.countries = new Map();
+    this.tourGuides = new Map();
+    this.tourGuideReviews = new Map();
+    this.tourGuidePhotos = new Map();
     
     this.userIdCounter = 1;
     this.destinationIdCounter = 1;
@@ -90,6 +115,9 @@ export class MemStorage implements IStorage {
     this.tripIdCounter = 1;
     this.tripDetailIdCounter = 1;
     this.budgetAllocationIdCounter = 1;
+    this.tourGuideIdCounter = 1;
+    this.tourGuideReviewIdCounter = 1;
+    this.tourGuidePhotoIdCounter = 1;
     
     // Initialize with sample travel data
     this.initializeData();
@@ -287,6 +315,48 @@ export class MemStorage implements IStorage {
     const updatedAllocation: BudgetAllocation = { ...allocation, ...allocationUpdate };
     this.budgetAllocations.set(allocation.id, updatedAllocation);
     return updatedAllocation;
+  }
+  
+  // Tour guide methods
+  async getTourGuides(): Promise<TourGuide[]> {
+    return Array.from(this.tourGuides.values());
+  }
+  
+  async getTourGuide(id: number): Promise<TourGuide | undefined> {
+    return this.tourGuides.get(id);
+  }
+  
+  async createTourGuide(tourGuide: InsertTourGuide): Promise<TourGuide> {
+    const id = this.tourGuideIdCounter++;
+    const newTourGuide: TourGuide = { ...tourGuide, id };
+    this.tourGuides.set(id, newTourGuide);
+    return newTourGuide;
+  }
+  
+  // Tour guide reviews methods
+  async getTourGuideReviews(tourGuideId: number): Promise<TourGuideReview[]> {
+    return Array.from(this.tourGuideReviews.values())
+      .filter(review => review.tourGuideId === tourGuideId);
+  }
+  
+  async createTourGuideReview(review: InsertTourGuideReview): Promise<TourGuideReview> {
+    const id = this.tourGuideReviewIdCounter++;
+    const newReview: TourGuideReview = { ...review, id };
+    this.tourGuideReviews.set(id, newReview);
+    return newReview;
+  }
+  
+  // Tour guide photos methods
+  async getTourGuidePhotos(tourGuideId: number): Promise<TourGuidePhoto[]> {
+    return Array.from(this.tourGuidePhotos.values())
+      .filter(photo => photo.tourGuideId === tourGuideId);
+  }
+  
+  async createTourGuidePhoto(photo: InsertTourGuidePhoto): Promise<TourGuidePhoto> {
+    const id = this.tourGuidePhotoIdCounter++;
+    const newPhoto: TourGuidePhoto = { ...photo, id };
+    this.tourGuidePhotos.set(id, newPhoto);
+    return newPhoto;
   }
   
   // Initialize with sample data for development
@@ -581,6 +651,101 @@ export class MemStorage implements IStorage {
       food: 400,
       activities: 200,
       miscellaneous: 300
+    });
+    
+    // Add sample tour guides
+    const tourGuide1 = this.createTourGuide({
+      name: "Elena Gomez",
+      location: "Barcelona, Spain",
+      bio: "Professional guide with over 10 years of experience showing tourists the hidden gems of Barcelona. Fluent in Spanish, English, and French, specializing in architectural and culinary tours.",
+      imageUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=988&q=80",
+      rating: 4.9,
+      reviewCount: 143,
+      specialties: ["Architecture", "Culinary", "Local Culture"],
+      languages: ["Spanish", "English", "French"],
+      pricePerDay: 180,
+      yearsExperience: 10,
+      toursCompleted: 756,
+      certifications: ["Licensed Barcelona Tour Guide", "Culinary Tour Specialist", "First Aid Certified"],
+      contactEmail: "elena.gomez@barcelonaguides.com",
+      contactPhone: "+34 612 345 678"
+    });
+    
+    const tourGuide2 = this.createTourGuide({
+      name: "Akira Tanaka",
+      location: "Tokyo, Japan",
+      bio: "Tokyo native with extensive knowledge of both traditional and modern aspects of Japanese culture. Passionate about sharing authentic experiences with travelers seeking to discover the real Japan.",
+      imageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+      rating: 4.8,
+      reviewCount: 98,
+      specialties: ["Traditional Culture", "Technology", "Food Tours"],
+      languages: ["Japanese", "English", "Mandarin"],
+      pricePerDay: 200,
+      yearsExperience: 8,
+      toursCompleted: 512,
+      certifications: ["Tokyo Tourism Association Guide", "Japanese Cultural Heritage Expert", "Language Proficiency"],
+      contactEmail: "akira.tanaka@tokyoguides.jp",
+      contactPhone: "+81 90 1234 5678"
+    });
+    
+    const tourGuide3 = this.createTourGuide({
+      name: "Dimitris Papadopoulos",
+      location: "Santorini, Greece",
+      bio: "Island native with deep knowledge of Greek history and culture. Specializes in private tours that combine breathtaking scenery, historical sites, and authentic local experiences off the beaten path.",
+      imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+      rating: 4.7,
+      reviewCount: 76,
+      specialties: ["History", "Photography", "Culinary", "Sailing"],
+      languages: ["Greek", "English", "Italian", "German"],
+      pricePerDay: 160,
+      yearsExperience: 15,
+      toursCompleted: 628,
+      certifications: ["Greek National Tourism Organization License", "Marine Safety Certified", "Advanced First Aid"],
+      contactEmail: "dimitris@santoriniexplorers.gr",
+      contactPhone: "+30 695 123 4567"
+    });
+    
+    // Add reviews for Elena Gomez
+    this.createTourGuideReview({
+      tourGuideId: 1,
+      reviewerName: "Sarah Johnson",
+      reviewerImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+      rating: 5.0,
+      comment: "Elena showed us a Barcelona we would never have discovered on our own. Her knowledge of Gaudí's architecture was incredible, and she knew exactly when to visit each site to avoid the crowds. She also took us to an amazing tapas place that wasn't in any guidebook!",
+      date: "2023-05-15",
+      tourLocation: "Barcelona"
+    });
+    
+    this.createTourGuideReview({
+      tourGuideId: 1,
+      reviewerName: "Michael Chen",
+      reviewerImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+      rating: 4.5,
+      comment: "Elena is extremely knowledgeable and friendly. She customized our tour perfectly for our interests and was especially attentive to our children, making the experience engaging for them as well. Her restaurant recommendations were spot on!",
+      date: "2023-04-22",
+      tourLocation: "Barcelona"
+    });
+    
+    // Add photos for Elena Gomez
+    this.createTourGuidePhoto({
+      tourGuideId: 1,
+      imageUrl: "https://images.unsplash.com/photo-1551622996-91a4c97ad239?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+      location: "Sagrada Familia, Barcelona",
+      date: "2023-03-10"
+    });
+    
+    this.createTourGuidePhoto({
+      tourGuideId: 1,
+      imageUrl: "https://images.unsplash.com/photo-1561409106-fece0aca76fc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+      location: "Park Güell, Barcelona",
+      date: "2023-02-15"
+    });
+    
+    this.createTourGuidePhoto({
+      tourGuideId: 1,
+      imageUrl: "https://images.unsplash.com/photo-1587789202069-f57ef526faf2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=987&q=80",
+      location: "Gothic Quarter, Barcelona",
+      date: "2023-04-18"
     });
   }
 }
