@@ -10,6 +10,7 @@ import NotFound from "@/pages/not-found";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import TripItinerary from "@/components/TripItinerary";
 
 function Router() {
   return (
