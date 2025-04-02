@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { convertCurrency, formatCurrencyByCode } from "@/lib/currency";
+import { useRouter } from 'next/router'; // Import useRouter
 
 interface AttractionCardProps {
   attraction: Attraction;
@@ -12,7 +13,8 @@ interface AttractionCardProps {
 
 const AttractionCard = ({ attraction }: AttractionCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
-  
+  const router = useRouter(); // Initialize useRouter
+
   const {
     name,
     description,
@@ -57,9 +59,9 @@ const AttractionCard = ({ attraction }: AttractionCardProps) => {
     e.stopPropagation();
     setIsFavorite(!isFavorite);
   };
-  
+
   const { selectedCurrency } = useCurrency();
-  
+
   // Convert price to selected currency
   const convertedPrice = convertCurrency(price, selectedCurrency.code);
   const formattedPrice = formatCurrencyByCode(convertedPrice, selectedCurrency.code);
@@ -101,9 +103,14 @@ const AttractionCard = ({ attraction }: AttractionCardProps) => {
         <p className="text-neutral-700 text-sm mb-3">{description}</p>
         <div className="flex justify-between items-center">
           <p className="text-lg font-semibold text-primary">{formattedPrice}</p>
-          <Button className="px-4 py-2 bg-primary hover:bg-blue-700 text-white font-medium rounded-lg text-sm transition">
-            Book Now
-          </Button>
+          <div className="flex"> {/* Added a div to hold both buttons */}
+            <Button className="px-4 py-2 bg-primary hover:bg-blue-700 text-white font-medium rounded-lg text-sm transition mr-2">
+              Book Now
+            </Button>
+            <Button variant="outline" onClick={() => router.push(`/attractions/${attraction.id}`)}> {/* Added View Details button with navigation */}
+              View Details
+            </Button>
+          </div>
         </div>
       </div>
     </div>
