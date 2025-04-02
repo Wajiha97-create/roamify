@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import TripItinerary from "@/components/TripItinerary";
+import HotelDetails from "@/pages/HotelDetails"; // Import the HotelDetails component
 
 function Router() {
   return (
@@ -22,6 +23,7 @@ function Router() {
           <Route path="/destinations/:id" component={DestinationDetails} />
           <Route path="/plan" component={ItineraryPlannerPage} />
           <Route path="/hotels" component={HotelsPage} />
+          <Route path="/hotels/:id" component={HotelDetails} /> {/* Added route for hotel details */}
           <Route path="/attractions" component={AttractionsPage} />
           <Route path="/agents" component={TourAgents} />
           <Route path="/agents/:id" component={AgentDetail} />

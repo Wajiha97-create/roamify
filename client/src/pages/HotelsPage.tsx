@@ -310,10 +310,12 @@ const HotelsPage = () => {
               </div>
             </CardContent>
             <CardFooter className="pt-0">
-              <Button variant="outline" className="w-full">
-                <HotelIcon size={16} className="mr-2" />
-                View Details
-              </Button>
+              <Link to={`/hotels/${hotel.id}`} className="w-full">
+                <Button variant="outline" className="w-full">
+                  <HotelIcon size={16} className="mr-2" />
+                  View Details
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}
