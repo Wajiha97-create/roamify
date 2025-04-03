@@ -21,8 +21,8 @@ import type { Hotel, Destination } from "@shared/schema";
 
 const HotelsPage = () => {
   // State for filters
-  const [countryFilter, setCountryFilter] = useState<string>("");
-  const [cityFilter, setCityFilter] = useState<string>("");
+  const [countryFilter, setCountryFilter] = useState<string>("all_countries");
+  const [cityFilter, setCityFilter] = useState<string>("all_cities");
   const [maxPrice, setMaxPrice] = useState<number>(1000);
   const [typeFilter, setTypeFilter] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");

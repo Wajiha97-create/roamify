@@ -164,46 +164,44 @@ const Home = () => {
               </Card>
             ))
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tourGuides?.slice(0, 3).map((guide) => (
-                <Link key={guide.id} href={`/agents/${guide.id}`}>
-                  <Card className="cursor-pointer hover:shadow-md transition-shadow">
-                    <CardContent className="p-0">
-                      <div className="grid grid-cols-3">
-                        <div className="col-span-1 bg-neutral-100">
-                          <img 
-                            src={guide.imageUrl} 
-                            alt={guide.name} 
-                            className="w-full h-40 object-cover"
-                          />
+            tourGuides?.slice(0, 3).map((guide) => (
+              <Link key={guide.id} href={`/agents/${guide.id}`}>
+                <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                  <CardContent className="p-0">
+                    <div className="grid grid-cols-3">
+                      <div className="col-span-1 bg-neutral-100">
+                        <img 
+                          src={guide.imageUrl} 
+                          alt={guide.name} 
+                          className="w-full h-40 object-cover"
+                        />
+                      </div>
+                      <div className="col-span-2 p-4">
+                        <h3 className="font-semibold">{guide.name}</h3>
+                        <div className="flex items-center text-sm text-neutral-600 mt-1">
+                          <MapPin className="h-3 w-3 mr-1" />
+                          {guide.location}
                         </div>
-                        <div className="col-span-2 p-4">
-                          <h3 className="font-semibold">{guide.name}</h3>
-                          <div className="flex items-center text-sm text-neutral-600 mt-1">
-                            <MapPin className="h-3 w-3 mr-1" />
-                            {guide.location}
+                        <div className="flex items-center mt-2">
+                          <div className="flex items-center">
+                            <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                            <span className="ml-1 font-medium">{guide.rating}</span>
                           </div>
-                          <div className="flex items-center mt-2">
-                            <div className="flex items-center">
-                              <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                              <span className="ml-1 font-medium">{guide.rating}</span>
-                            </div>
-                            <span className="text-xs text-neutral-500 ml-1">({guide.reviewCount} reviews)</span>
-                          </div>
-                          <div className="mt-3 flex flex-wrap gap-1">
-                            {guide.specialties.slice(0, 2).map(specialty => (
-                              <Badge key={specialty} variant="secondary" className="text-xs">
-                                {specialty}
-                              </Badge>
-                            ))}
-                          </div>
+                          <span className="text-xs text-neutral-500 ml-1">({guide.reviewCount} reviews)</span>
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-1">
+                          {guide.specialties.slice(0, 2).map(specialty => (
+                            <Badge key={specialty} variant="secondary" className="text-xs">
+                              {specialty}
+                            </Badge>
+                          ))}
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))
           )}
         </div>
       </section>
